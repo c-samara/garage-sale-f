@@ -1,0 +1,234 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1;
+  padding: 2rem;
+  background-color: #f8f9fa;
+}
+
+.cadastroContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.cadastroHeader {
+  text-align: center;
+  padding: 2rem;
+  background-color: #f0f7ff;
+}
+
+.cadastroHeader h1 {
+  margin: 0;
+  color: #333;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.cadastroHeader p {
+  margin-top: 0.5rem;
+  color: #666;
+  font-size: 1rem;
+}
+
+.cadastroForm {
+  padding: 2rem;
+}
+
+.tipoUsuario {
+  margin-bottom: 1.5rem;
+}
+
+.tipoUsuario h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.radioGroup {
+  display: flex;
+  gap: 2rem;
+}
+
+.radioOption {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.radioOption input {
+  margin: 0;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.input, .inputError {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+.inputError {
+  border-color: #d32f2f;
+  background-color: #fff8f8;
+}
+
+.erro {
+  display: block;
+  color: #d32f2f;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.termos {
+  margin-bottom: 1.5rem;
+}
+
+.checkboxContainer {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.checkboxContainer input {
+  margin-top: 0.25rem;
+}
+
+.termosLink {
+  color: #4a90e2;
+  text-decoration: none;
+}
+
+.termosLink:hover {
+  text-decoration: underline;
+}
+
+.formActions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cadastrarButton {
+  width: 100%;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.85rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cadastrarButton:hover {
+  background-color: #3a7bc8;
+}
+
+.loginText {
+  margin-top: 1rem;
+  color: #666;
+  text-align: center;
+}
+
+.loginLink {
+  color: #4a90e2;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.loginLink:hover {
+  text-decoration: underline;
+}
+
+/* Estilo para o container de sucesso */
+.sucessoContainer {
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.sucessoIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  background-color: #4caf50;
+  color: white;
+  border-radius: 50%;
+  font-size: 2rem;
+  margin: 0 auto 1.5rem;
+}
+
+.sucessoContainer h2 {
+  color: #388e3c;
+  margin-bottom: 1rem;
+}
+
+.sucessoContainer p {
+  color: #555;
+  margin: 0.5rem 0;
+}
+
+.loginButton {
+  display: inline-block;
+  background-color: #4a90e2;
+  color: white;
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  margin-top: 1.5rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.loginButton:hover {
+  background-color: #3a7bc8;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .formRow {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  
+  .radioGroup {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}

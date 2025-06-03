@@ -1,0 +1,477 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1;
+  padding: 2rem;
+  background-color: #f8f9fa;
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.pageHeader h1 {
+  margin: 0;
+  color: #333;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.novaTransacaoButton {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.novaTransacaoButton:hover {
+  background-color: #3a7bc8;
+}
+
+/* Resumo Cards */
+.resumoContainer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.resumoCard {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.resumoTitulo {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.resumoValor {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.saldoPositivo {
+  color: #388e3c;
+}
+
+.saldoNegativo {
+  color: #d32f2f;
+}
+
+.entradaValor {
+  color: #388e3c;
+}
+
+.saidaValor {
+  color: #d32f2f;
+}
+
+/* Filtros */
+.filtrosContainer {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.filtrosContainer h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #333;
+  font-size: 1.3rem;
+  font-weight: 500;
+}
+
+.filtrosForm {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+  align-items: end;
+}
+
+.filtroGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filtroGroup label {
+  font-weight: 500;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.input, .select {
+  padding: 0.75rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  background-color: white;
+}
+
+.limparFiltrosButton {
+  background-color: #f5f5f5;
+  color: #555;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 0.75rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  height: 42px;
+}
+
+.limparFiltrosButton:hover {
+  background-color: #e0e0e0;
+}
+
+/* Transações */
+.transacoesContainer {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.transacoesContainer h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #333;
+  font-size: 1.3rem;
+  font-weight: 500;
+}
+
+.transacoesTable {
+  width: 100%;
+}
+
+.tableHeader {
+  display: flex;
+  background-color: #f5f7fa;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 1rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.tableRow {
+  display: flex;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 1rem;
+  transition: background-color 0.2s;
+}
+
+.tableRow:last-child {
+  border-bottom: none;
+}
+
+.tableRow:hover {
+  background-color: #f9f9f9;
+}
+
+.thTipo, .tdTipo {
+  flex: 1;
+}
+
+.thDescricao, .tdDescricao {
+  flex: 3;
+}
+
+.thValor, .tdValor {
+  flex: 1;
+  text-align: right;
+}
+
+.thData, .tdData {
+  flex: 1;
+}
+
+.thStatus, .tdStatus {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.thAcoes, .tdAcoes {
+  flex: 1;
+  text-align: right;
+}
+
+.tipoEntrada {
+  color: #388e3c;
+  font-weight: 500;
+}
+
+.tipoSaida {
+  color: #d32f2f;
+  font-weight: 500;
+}
+
+.valorEntrada {
+  color: #388e3c;
+}
+
+.valorSaida {
+  color: #d32f2f;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.statusConcluido {
+  background-color: #e8f5e9;
+  color: #388e3c;
+}
+
+.statusPendente {
+  background-color: #fff8e1;
+  color: #ffa000;
+}
+
+.statusCancelado {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+.detalhesButton {
+  background-color: transparent;
+  color: #4a90e2;
+  border: 1px solid #4a90e2;
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.detalhesButton:hover {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.emptyState p {
+  margin: 0.5rem 0;
+  color: #666;
+}
+
+/* Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.fecharButton {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #666;
+  cursor: pointer;
+}
+
+.modalBody {
+  padding: 1.5rem;
+}
+
+.transacaoDetalhes {
+  margin-bottom: 2rem;
+}
+
+.detalheItem {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.detalheLabel {
+  width: 150px;
+  font-weight: 500;
+  color: #555;
+}
+
+.detalheValor {
+  flex: 1;
+}
+
+.comprovanteContainer {
+  margin-top: 2rem;
+}
+
+.comprovanteContainer h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.comprovantePlaceholder {
+  background-color: #f5f7fa;
+  border: 1px dashed #ccc;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.comprovantePlaceholder p {
+  margin: 0.5rem 0;
+  color: #555;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.confirmarButton, .salvarButton {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.confirmarButton:hover, .salvarButton:hover {
+  background-color: #388e3c;
+}
+
+.fecharModalButton {
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.fecharModalButton:hover {
+  background-color: #d0d0d0;
+}
+
+/* Form Styles */
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.radioGroup {
+  display: flex;
+  gap: 2rem;
+}
+
+.radioOption {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (max-width: 900px) {
+  .resumoContainer {
+    grid-template-columns: 1fr;
+  }
+  
+  .filtrosForm {
+    grid-template-columns: 1fr;
+  }
+  
+  .tableHeader {
+    display: none;
+  }
+  
+  .tableRow {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    gap: 0.75rem;
+    position: relative;
+  }
+  
+  .tdTipo {
+    font-size: 1.1rem;
+  }
+  
+  .tdDescricao {
+    font-weight: 500;
+  }
+  
+  .tdValor {
+    font-size: 1.2rem;
+    text-align: left;
+  }
+  
+  .tdAcoes {
+    text-align: left;
+    margin-top: 0.5rem;
+  }
+}

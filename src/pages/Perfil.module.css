@@ -1,0 +1,228 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1;
+  padding: 2rem;
+  background-color: #f8f9fa;
+}
+
+.profileContainer {
+  max-width: 900px;
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.profileHeader {
+  display: flex;
+  align-items: center;
+  padding: 2rem;
+  background-color: #f0f7ff;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.profileImageContainer {
+  margin-right: 2rem;
+}
+
+.profileImage {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profileInfo {
+  flex: 1;
+}
+
+.profileInfo h1 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+  font-size: 1.8rem;
+}
+
+.userType {
+  color: #666;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.editButton {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.editButton:hover {
+  background-color: #3a7bc8;
+}
+
+.profileDetails, .editForm {
+  padding: 2rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.profileDetails h2, .editForm h2, .activitySection h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #333;
+  font-size: 1.4rem;
+}
+
+.detailItem {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.detailLabel {
+  font-weight: 600;
+  width: 100px;
+  color: #555;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.formGroup input:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+.formActions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.saveButton, .cancelButton {
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.saveButton {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+}
+
+.saveButton:hover {
+  background-color: #3a7bc8;
+}
+
+.cancelButton {
+  background-color: transparent;
+  color: #666;
+  border: 1px solid #e0e0e0;
+}
+
+.cancelButton:hover {
+  background-color: #f5f5f5;
+}
+
+.activitySection {
+  padding: 2rem;
+}
+
+.activityList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.activityCard {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  transition: transform 0.2s;
+}
+
+.activityCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.activityIcon {
+  font-size: 2rem;
+  margin-right: 1rem;
+}
+
+.activityInfo {
+  flex: 1;
+}
+
+.activityInfo h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.activityInfo p {
+  margin: 0 0 0.5rem 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.status {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.confirmado {
+  background-color: #e3f7e3;
+  color: #2e7d32;
+}
+
+.pendente {
+  background-color: #fff8e1;
+  color: #f57f17;
+}
+
+.alugado {
+  background-color: #e1f5fe;
+  color: #0277bd;
+}
+
+.emptyState {
+  text-align: center;
+  color: #888;
+  padding: 2rem;
+}
