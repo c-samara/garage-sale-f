@@ -1,0 +1,44 @@
+/* Muda a cor das setas */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #ffffff; /* Altere para a cor desejada */
+}
+
+/* (opcional) aumenta ou estiliza melhor */
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* Cor dos pontinhos */
+.swiper-pagination-bullet {
+  background-color: #ccc;        /* Cor dos bullets inativos */
+  opacity: 1;
+}
+
+/* Cor do bullet ativo (slide atual) */
+.swiper-pagination-bullet-active {
+  background-color: #ffffff;     /* Cor do bullet ativo */
+}
+
+/* (Opcional) Aumenta o tamanho dos bullets */
+.swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  margin: 0 4px;
+  border-radius: 50%;            /* Mantém redondo */
+}
+
+.slideText {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 8px 16px;
+  border-radius: 8px;
+}

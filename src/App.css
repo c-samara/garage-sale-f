@@ -1,0 +1,12 @@
+/* Muda a cor das setas */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #000000; /* Altere para a cor desejada */
+}
+
+/* (opcional) aumenta ou estiliza melhor */
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 24px;
+  font-weight: bold;
+}

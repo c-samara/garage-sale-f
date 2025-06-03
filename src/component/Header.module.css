@@ -1,0 +1,78 @@
+:root {
+
+    --margin-elementos-nav-bar: 20px;
+    --botao-login-cor: #e7951d;
+    --botao-login-cor-hover: #be7c19;
+    --text-main-color: rgb(54, 54, 54);
+    --nav-bar-font-size: 16px;
+    --fonte-padrao: Arial, Helvetica, sans-serif;
+    --nav-bar-background-color: #ffffff;
+}
+
+body {
+
+    font-family: var(--fonte-padrao);
+    color: var(--text-main-color)
+}
+.header {
+
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--nav-bar-background-color);
+    padding: 20px;
+    margin: 0px;
+}
+
+
+.logo {
+
+    font-size: var(--nav-bar-font-size);
+    font-weight: bold;
+}
+
+.nav a {
+    margin-left: var(--margin-elementos-nav-bar);
+    text-decoration: none;
+    font-size: var(--nav-bar-font-size);
+    color: var(--text-main-color);
+    padding: 6px 10px; /* já define o espaço */
+    border-radius: 6px;
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+}
+
+
+.nav a:hover {
+    font-weight: 500;
+    background-color: #e0e0e0; /* cinza claro */
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+
+.loginButton {
+    background-color: var(--botao-login-cor);
+    color: var(--text-main-color);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    margin: var(--margin-elementos-nav-bar);
+    font-size: var(--nav-bar-font-size);
+}
+
+.loginButton:hover {
+    background-color: var(--botao-login-cor-hover);
+    cursor: pointer;
+}
+
+.imgLogo {
+    width: 100px;
+    height: 100px;
+}
+
+.logo {
+
+    padding: 0;
+}
