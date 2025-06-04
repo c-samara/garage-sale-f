@@ -99,10 +99,6 @@ export default function MeusEventos() {
           return a.nome.localeCompare(b.nome);
         case 'nome-desc':
           return b.nome.localeCompare(a.nome);
-        case 'receita-asc':
-          return a.receita - b.receita;
-        case 'receita-desc':
-          return b.receita - a.receita;
         default:
           return 0;
       }
@@ -207,8 +203,6 @@ export default function MeusEventos() {
                 <option value="data-desc">Data (mais distante)</option>
                 <option value="nome-asc">Nome (A-Z)</option>
                 <option value="nome-desc">Nome (Z-A)</option>
-                <option value="receita-asc">Receita (menor)</option>
-                <option value="receita-desc">Receita (maior)</option>
               </select>
             </div>
           </div>

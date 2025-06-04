@@ -16,10 +16,10 @@ export default function CadastroEvento() {
     imagens: []
   });
 
+  const [imagemPreview, setImagemPreview] = useState(null);
   const [espacosDisponiveis, setEspacosDisponiveis] = useState([]);
   const [modalAberto, setModalAberto] = useState(false);
 
-  // Simulando fetch do "banco de dados"
   useEffect(() => {
     const dadosFicticios = [
       { id: 1, nome: 'Salão Comunitário', endereco: 'Rua das Flores, 123 - Centro', preco: 150 },
@@ -60,6 +60,20 @@ export default function CadastroEvento() {
         categorias: formData.categorias.filter(cat => cat !== value)
       });
     }
+  };
+
+  const handleImagemChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagemPreview(reader.result);
+      setFormData({
+        ...formData,
+        imagens: [reader.result]
+      });
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = (e) => {
@@ -181,6 +195,22 @@ export default function CadastroEvento() {
                   placeholder="Descreva seu evento, o que será vendido, público-alvo, etc."
                 ></textarea>
               </div>
+
+              <div className={styles.formGroup}>
+                <label htmlFor="imagem">Imagem do Evento</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImagemChange}
+                />
+                {imagemPreview && (
+                  <img
+                    src={imagemPreview}
+                    alt="Pré-visualização"
+                    style={{ marginTop: '10px', maxWidth: '100%', borderRadius: '8px' }}
+                  />
+                )}
+              </div>
             </section>
 
             <section className={styles.formSection}>
@@ -246,7 +276,6 @@ export default function CadastroEvento() {
         </div>
       </main>
 
-      {/* MODAL */}
       {modalAberto && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
