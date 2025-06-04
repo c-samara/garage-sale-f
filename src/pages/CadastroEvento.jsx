@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../component/Header';
 import Footer from '../component/Footer';
 import styles from './CadastroEvento.module.css';
@@ -16,11 +16,18 @@ export default function CadastroEvento() {
     imagens: []
   });
 
-  const espacosDisponiveis = [
-    { id: 1, nome: 'Salão Comunitário', endereco: 'Rua das Flores, 123 - Centro', preco: 150 },
-    { id: 2, nome: 'Garagem Vila Mariana', endereco: 'Av. Paulista, 1000 - Vila Mariana', preco: 80 },
-    { id: 3, nome: 'Espaço Cultural', endereco: 'Rua Augusta, 500 - Consolação', preco: 200 }
-  ];
+  const [espacosDisponiveis, setEspacosDisponiveis] = useState([]);
+  const [modalAberto, setModalAberto] = useState(false);
+
+  // Simulando fetch do "banco de dados"
+  useEffect(() => {
+    const dadosFicticios = [
+      { id: 1, nome: 'Salão Comunitário', endereco: 'Rua das Flores, 123 - Centro', preco: 150 },
+      { id: 2, nome: 'Garagem Vila Mariana', endereco: 'Av. Paulista, 1000 - Vila Mariana', preco: 80 },
+      { id: 3, nome: 'Espaço Cultural', endereco: 'Rua Augusta, 500 - Consolação', preco: 200 }
+    ];
+    setEspacosDisponiveis(dadosFicticios);
+  }, []);
 
   const categoriasOpcoes = [
     { id: 'roupas', nome: 'Roupas e Acessórios' },
@@ -61,13 +68,27 @@ export default function CadastroEvento() {
     alert('Evento cadastrado com sucesso!');
   };
 
-  // ✅ IMPLEMENTAÇÃO DA FUNÇÃO QUE FALTAVA
   const calcularPrecoTotal = () => {
     const espacoSelecionado = espacosDisponiveis.find(
       espaco => espaco.id === parseInt(formData.espacoId)
     );
     return espacoSelecionado ? espacoSelecionado.preco : 0;
   };
+
+  const abrirModal = () => setModalAberto(true);
+  const fecharModal = () => setModalAberto(false);
+
+  const selecionarEspaco = (espacoId) => {
+    setFormData({
+      ...formData,
+      espacoId: espacoId.toString()
+    });
+    fecharModal();
+  };
+
+  const espacoSelecionado = espacosDisponiveis.find(
+    e => e.id === parseInt(formData.espacoId)
+  );
 
   return (
     <div className={styles.container}>
@@ -187,38 +208,25 @@ export default function CadastroEvento() {
 
             <section className={styles.formSection}>
               <h2>Local do Evento</h2>
-
               <div className={styles.formGroup}>
-                <label htmlFor="espacoId">Selecione um Espaço</label>
-                <select
-                  id="espacoId"
-                  name="espacoId"
-                  value={formData.espacoId}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Selecione um espaço...</option>
-                  {espacosDisponiveis.map(espaco => (
-                    <option key={espaco.id} value={espaco.id}>
-                      {espaco.nome} - {espaco.endereco} (R$ {espaco.preco}/dia)
-                    </option>
-                  ))}
-                </select>
+                <button type="button" onClick={abrirModal} className={styles.selectButton}>
+                  Selecionar Espaço
+                </button>
+                {espacoSelecionado && (
+                  <p className={styles.espacoSelecionado}>
+                    Espaço escolhido: <strong>{espacoSelecionado.nome}</strong> – {espacoSelecionado.endereco}
+                  </p>
+                )}
               </div>
             </section>
 
             <section className={styles.resumoSection}>
               <h2>Resumo do Pedido</h2>
-
               <div className={styles.resumoCard}>
                 <div className={styles.resumoItem}>
                   <span>Aluguel do espaço:</span>
                   <span>
-                    {formData.espacoId
-                      ? `R$ ${
-                          espacosDisponiveis.find(e => e.id === parseInt(formData.espacoId)).preco
-                        },00`
-                      : 'Selecione um espaço'}
+                    {espacoSelecionado ? `R$ ${espacoSelecionado.preco},00` : 'Selecione um espaço'}
                   </span>
                 </div>
 
@@ -237,6 +245,32 @@ export default function CadastroEvento() {
           </form>
         </div>
       </main>
+
+      {/* MODAL */}
+      {modalAberto && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <div className={styles.modalHeader}>
+              <h3>Selecione um Espaço</h3>
+              <button onClick={fecharModal} className={styles.fecharModal}>×</button>
+            </div>
+            <div className={styles.modalBody}>
+              {espacosDisponiveis.map(espaco => (
+                <div key={espaco.id} className={styles.espacoItem}>
+                  <p>
+                    <strong>{espaco.nome}</strong> <br />
+                    {espaco.endereco} <br />
+                    R$ {espaco.preco},00 / dia
+                  </p>
+                  <button onClick={() => selecionarEspaco(espaco.id)}>
+                    Selecionar
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>
