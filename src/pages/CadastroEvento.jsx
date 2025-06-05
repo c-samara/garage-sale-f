@@ -63,18 +63,28 @@ export default function CadastroEvento() {
   };
 
   const handleImagemChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagemPreview(reader.result);
-      setFormData({
-        ...formData,
-        imagens: [reader.result]
-      });
-    };
-    reader.readAsDataURL(file);
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const maxSizeMB = 25;
+  const maxSizeBytes = maxSizeMB * 1024 * 1024;
+
+  if (file.size > maxSizeBytes) {
+    alert(`O tamanho da imagem excede o máximo permitido de ${maxSizeMB}MB.`);
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    setImagemPreview(reader.result);
+    setFormData({
+      ...formData,
+      imagens: [reader.result]
+    });
   };
+  reader.readAsDataURL(file);
+};
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
