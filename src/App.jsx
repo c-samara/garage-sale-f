@@ -1,7 +1,6 @@
 import './App.css'
 import AppRoutes from './routes/AppRoutes'
 import Home from "./pages/Home.jsx"
-import Cadastro from './pages/CadastroForm.jsx'
 import Perfil from './pages/Perfil.jsx'
 import MeusEspacos from './pages/MeusEspacos.jsx'
 import CadastroEvento from './pages/CadastroEvento.jsx'
@@ -14,7 +13,6 @@ import './index.css'
 function App() {
   return <Routes>
     <Route path="/" element={<Home />} />
-    <Route path="/cadastro" element={<Cadastro />} />
     <Route path="/perfil" element={<Perfil />} />
     <Route path="/meus-espacos" element={<MeusEspacos />} />
     <Route path="/cadastro-evento" element={<CadastroEvento />} />
