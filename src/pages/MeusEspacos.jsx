@@ -1,276 +1,225 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../component/Header';
 import Footer from '../component/Footer';
 import styles from './MeusEspacos.module.css';
 
 export default function MeusEspacos() {
-  // Estado para armazenar a lista de espaços
-  const [espacos, setEspacos] = useState([
-    {
-      id: 1,
-      nome: 'Salão Comunitário',
-      endereco: 'Rua das Flores, 123 - Centro, São Paulo',
-      tamanho: '80m²',
-      preco: 150.00,
-      disponivel: true,
-      imagens: ['/img/espaco1-1.jpg', '/img/espaco1-2.jpg'],
-      descricao: 'Espaço amplo e arejado, ideal para pequenos eventos e bazares.'
-    },
-    {
-      id: 2,
-      nome: 'Garagem Vila Mariana',
-      endereco: 'Av. Paulista, 1000 - Vila Mariana, São Paulo',
-      tamanho: '40m²',
-      preco: 80.00,
-      disponivel: false,
-      imagens: ['/img/espaco2-1.jpg'],
-      descricao: 'Garagem coberta com acesso fácil, perfeita para pequenas vendas.'
-    }
-  ]);
-
-  // Estado para controlar o modal de cadastro/edição
-  const [showModal, setShowModal] = useState(false);
+  const [espacos, setEspacos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError]   = useState(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedEspaco, setSelectedEspaco] = useState(null);
   const [currentEspaco, setCurrentEspaco] = useState({
     nome: '',
     endereco: '',
-    tamanho: '',
+    capacidade: '',
     preco: '',
-    disponivel: true,
-    imagens: [],
     descricao: ''
   });
-  const [isEditing, setIsEditing] = useState(false);
 
-  // Função para abrir o modal de cadastro
-  const handleOpenNewModal = () => {
-    setCurrentEspaco({
-      nome: '',
-      endereco: '',
-      tamanho: '',
-      preco: '',
-      disponivel: true,
-      imagens: [],
-      descricao: ''
-    });
-    setIsEditing(false);
-    setShowModal(true);
-  };
+  const fetchEspacos = async () => {
+    try {
+      const res = await fetch('https://apex.oracle.com/pls/apex/garage_sale/api/spaces/');
+      if (!res.ok) throw new Error(`Erro ${res.status}`);
+      const data = await res.json();
 
-  // Função para abrir o modal de edição
-  const handleOpenEditModal = (espaco) => {
-    setCurrentEspaco({...espaco});
-    setIsEditing(true);
-    setShowModal(true);
-  };
+      const adaptado = data.items.map((item) => ({
+        id: item.id,
+        nome: item.title,
+        endereco: item.address,
+        capacidade: item.capacity,
+        preco: item.price,
+        descricao: item.description,
+        imagem: item.image_url || '/img/espaco-default.jpg',
+        tags: item.tags
+      }));
 
-  // Função para fechar o modal
-  const handleCloseModal = () => {
-    setShowModal(false);
-  };
-
-  // Função para lidar com mudanças no formulário
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setCurrentEspaco({
-      ...currentEspaco,
-      [name]: type === 'checkbox' ? checked : value
-    });
-  };
-
-  // Função para lidar com o envio do formulário
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    if (isEditing) {
-      // Atualizar espaço existente
-      setEspacos(espacos.map(espaco => 
-        espaco.id === currentEspaco.id ? {...currentEspaco} : espaco
-      ));
-      alert('Espaço atualizado com sucesso!');
-    } else {
-      // Adicionar novo espaço
-      const newEspaco = {
-        ...currentEspaco,
-        id: Date.now(), // ID temporário
-        imagens: ['/img/espaco-default.jpg'] // Imagem padrão
-      };
-      setEspacos([...espacos, newEspaco]);
-      alert('Espaço cadastrado com sucesso!');
+      setEspacos(adaptado);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-    
-    setShowModal(false);
   };
 
-  // Função para remover um espaço
-  const handleRemoveEspaco = (id) => {
-    if (window.confirm('Tem certeza que deseja remover este espaço?')) {
-      setEspacos(espacos.filter(espaco => espaco.id !== id));
+  useEffect(() => {
+    fetchEspacos();
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setCurrentEspaco((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCreate = async (e) => {
+    e.preventDefault();
+
+    const payload = {
+      host_id: 63,
+      title: currentEspaco.nome,
+      description: currentEspaco.descricao,
+      address: currentEspaco.endereco,
+      price: parseFloat(currentEspaco.preco),
+      capacity: currentEspaco.capacidade,
+      tags: [22]
+    };
+
+    try {
+      const res = await fetch('https://apex.oracle.com/pls/apex/garage_sale/api/spaces/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error(`Erro ao cadastrar: ${res.status}`);
+
+      alert('Espaço cadastrado!');
+      setShowCreateModal(false);
+      await fetchEspacos();
+    } catch (err) {
+      alert(`Erro: ${err.message}`);
+    }
+  };
+
+  const openDetails = (espaco) => {
+    setSelectedEspaco(espaco);
+    setShowDetailsModal(true);
+  };
+
+  const deleteEspaco = async (id) => {
+    if (!window.confirm('Confirma exclusão deste espaço?')) return;
+
+    try {
+      const res = await fetch(
+        `https://apex.oracle.com/pls/apex/garage_sale/api/spaces/${id}`,
+        { method: 'DELETE' }
+      );
+      if (!res.ok) throw new Error(`Erro ao deletar: ${res.status}`);
+
+      alert('Excluído com sucesso!');
+      setShowDetailsModal(false);
+      await fetchEspacos();
+    } catch (err) {
+      alert(`Erro: ${err.message}`);
     }
   };
 
   return (
     <div className={styles.container}>
       <Header />
-      
+
       <main className={styles.main}>
         <div className={styles.pageHeader}>
           <h1>Meus Espaços</h1>
-          <button 
+          <button
             className={styles.addButton}
-            onClick={handleOpenNewModal}
+            onClick={() => {
+              setCurrentEspaco({ nome:'', endereco:'', capacidade:'', preco:'', descricao:'' });
+              setShowCreateModal(true);
+            }}
           >
             + Cadastrar Novo Espaço
           </button>
         </div>
-        
-        {espacos.length > 0 ? (
+
+        {loading ? (
+          <p>Carregando…</p>
+        ) : error ? (
+          <p>Erro: {error}</p>
+        ) : espacos.length ? (
           <div className={styles.espacosGrid}>
-            {espacos.map((espaco) => (
-              <div key={espaco.id} className={styles.espacoCard}>
-                <div className={styles.espacoImageContainer}>
-                  <img 
-                    src={espaco.imagens[0]} 
-                    alt={espaco.nome} 
-                    className={styles.espacoImage}
-                  />
-                  <span className={`${styles.statusBadge} ${espaco.disponivel ? styles.disponivel : styles.indisponivel}`}>
-                    {espaco.disponivel ? 'Disponível' : 'Alugado'}
-                  </span>
-                </div>
-                
+            {espacos.map((e) => (
+              <div
+                key={e.id}
+                className={styles.espacoCard}
+                onClick={() => openDetails(e)}
+              >
+                <img src={e.imagem} alt={e.nome} className={styles.cardImage}/>
                 <div className={styles.espacoContent}>
-                  <h2>{espaco.nome}</h2>
-                  <p className={styles.espacoEndereco}>{espaco.endereco}</p>
+                  <h2>{e.nome}</h2>
+                  <p>{e.endereco}</p>
                   <div className={styles.espacoDetails}>
-                    <span>Tamanho: {espaco.tamanho}</span>
-                    <span>Preço: R$ {espaco.preco}/dia</span>
-                  </div>
-                  <p className={styles.espacoDescricao}>{espaco.descricao}</p>
-                  
-                  <div className={styles.espacoActions}>
-                    <button 
-                      className={styles.editButton}
-                      onClick={() => handleOpenEditModal(espaco)}
-                    >
-                      Editar
-                    </button>
-                    <button 
-                      className={styles.removeButton}
-                      onClick={() => handleRemoveEspaco(espaco.id)}
-                    >
-                      Remover
-                    </button>
+                    <span>Cap: {e.capacidade}</span>
+                    <span>R$ {e.preco}</span>
                   </div>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className={styles.emptyState}>
-            <p>Você ainda não possui espaços cadastrados.</p>
-            <p>Clique em "Cadastrar Novo Espaço" para começar.</p>
-          </div>
+          <p>Nenhum espaço encontrado.</p>
         )}
       </main>
-      
-      {showModal && (
+
+      {showCreateModal && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>
-            <h2>{isEditing ? 'Editar Espaço' : 'Cadastrar Novo Espaço'}</h2>
-            
-            <form onSubmit={handleSubmit}>
+            <h2>Novo Espaço</h2>
+            <form onSubmit={handleCreate}>
               <div className={styles.formGroup}>
-                <label htmlFor="nome">Nome do Espaço</label>
-                <input
-                  type="text"
-                  id="nome"
-                  name="nome"
-                  value={currentEspaco.nome}
-                  onChange={handleChange}
-                  required
-                />
+                <label>Nome</label>
+                <input name="nome" value={currentEspaco.nome} onChange={handleChange} required/>
               </div>
-              
               <div className={styles.formGroup}>
-                <label htmlFor="endereco">Endereço Completo</label>
-                <input
-                  type="text"
-                  id="endereco"
-                  name="endereco"
-                  value={currentEspaco.endereco}
-                  onChange={handleChange}
-                  required
-                />
+                <label>Endereço</label>
+                <input name="endereco" value={currentEspaco.endereco} onChange={handleChange} required/>
               </div>
-              
               <div className={styles.formRow}>
                 <div className={styles.formGroup}>
-                  <label htmlFor="tamanho">Tamanho (m²)</label>
-                  <input
-                    type="text"
-                    id="tamanho"
-                    name="tamanho"
-                    value={currentEspaco.tamanho}
-                    onChange={handleChange}
-                    required
-                  />
+                  <label>Capacidade</label>
+                  <input name="capacidade" value={currentEspaco.capacidade} onChange={handleChange} required/>
                 </div>
-                
                 <div className={styles.formGroup}>
-                  <label htmlFor="preco">Preço por Dia (R$)</label>
-                  <input
-                    type="number"
-                    id="preco"
-                    name="preco"
-                    min="0"
-                    step="0.01"
-                    value={currentEspaco.preco}
-                    onChange={handleChange}
-                    required
-                  />
+                  <label>Preço (R$)</label>
+                  <input type="number" name="preco" value={currentEspaco.preco} onChange={handleChange} required/>
                 </div>
               </div>
-              
               <div className={styles.formGroup}>
-                <label htmlFor="descricao">Descrição</label>
-                <textarea
-                  id="descricao"
-                  name="descricao"
-                  value={currentEspaco.descricao}
-                  onChange={handleChange}
-                  rows="4"
-                  required
-                ></textarea>
+                <label>Descrição</label>
+                <textarea name="descricao" rows="3" value={currentEspaco.descricao} onChange={handleChange} required/>
               </div>
-              
-              <div className={styles.formCheckbox}>
-                <input
-                  type="checkbox"
-                  id="disponivel"
-                  name="disponivel"
-                  checked={currentEspaco.disponivel}
-                  onChange={handleChange}
-                />
-                <label htmlFor="disponivel">Disponível para aluguel</label>
-              </div>
-              
+
               <div className={styles.formActions}>
-                <button type="submit" className={styles.saveButton}>
-                  {isEditing ? 'Salvar Alterações' : 'Cadastrar Espaço'}
-                </button>
-                <button 
-                  type="button" 
-                  className={styles.cancelButton}
-                  onClick={handleCloseModal}
-                >
-                  Cancelar
-                </button>
+                <button type="submit" className={styles.saveButton}>Salvar</button>
+                <button type="button" className={styles.cancelButton} onClick={() => setShowCreateModal(false)}>Cancelar</button>
               </div>
             </form>
           </div>
         </div>
       )}
-      
+
+      {showDetailsModal && selectedEspaco && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <div className={styles.detailsHeader}>
+              <img src={selectedEspaco.imagem} alt={selectedEspaco.nome} className={styles.headerImg}/>
+              <button
+                className={styles.trashButton}
+                title="Excluir espaço"
+                onClick={() => deleteEspaco(selectedEspaco.id)}
+              >
+                🗑️
+              </button>
+            </div>
+
+            <div className={styles.detailsBody}>
+              <h2>{selectedEspaco.nome}</h2>
+              <p><strong>Endereço:</strong> {selectedEspaco.endereco}</p>
+              <p><strong>Capacidade:</strong> {selectedEspaco.capacidade}</p>
+              <p><strong>Preço:</strong> R$ {selectedEspaco.preco}</p>
+              <p><strong>Descrição:</strong></p>
+              <p>{selectedEspaco.descricao}</p>
+            </div>
+
+            <div className={styles.formActions}>
+              <button className={styles.cancelButton} onClick={() => setShowDetailsModal(false)}>
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </div>
   );

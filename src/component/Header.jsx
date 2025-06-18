@@ -15,10 +15,8 @@ export default function Header() {
       <img className={styles.imgLogo} src={logo} alt="Logo" />
       <nav className={styles.nav}>
         <Link to="/">Início</Link>
-        <Link to="/meus-eventos">Meus eventos</Link>
-        <Link to="/perto-de-mim">Eventos perto de mim</Link>
-        <Link to="/cadastro">Cadastrar meu espaço</Link>
-        <Link to="/meus-espacos">Meus espaços</Link>
+        <Link to="/meus-eventos">Eventos</Link>
+        <Link to="/meus-espacos">Espaços</Link>
         <button className={styles.loginButton} onClick={handleLogin}>Login</button>
       </nav>
     </header>

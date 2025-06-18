@@ -14,7 +14,6 @@ export default function MeusEventos() {
       endereco: 'Rua das Flores, 123 - Centro, São Paulo',
       status: 'confirmado',
       participantes: 15,
-      receita: 750.00,
       categorias: ['livros', 'artesanato']
     },
     {
@@ -25,7 +24,6 @@ export default function MeusEventos() {
       endereco: 'Av. Paulista, 1000 - Vila Mariana, São Paulo',
       status: 'pendente',
       participantes: 0,
-      receita: 0,
       categorias: ['roupas']
     },
     {
@@ -35,8 +33,6 @@ export default function MeusEventos() {
       horario: '10:00 - 16:00',
       endereco: 'Rua Augusta, 500 - Consolação, São Paulo',
       status: 'concluido',
-      participantes: 32,
-      receita: 1280.00,
       categorias: ['eletronicos']
     }
   ]);
@@ -119,12 +115,6 @@ export default function MeusEventos() {
   };
 
   // Função para formatar moeda
-  const formatarMoeda = (valor) => {
-    return valor.toLocaleString('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    });
-  };
 
   // Função para obter a classe CSS de acordo com o status
   const getStatusClass = (status) => {
@@ -221,7 +211,6 @@ export default function MeusEventos() {
                 <div className={styles.thLocal}>Local</div>
                 <div className={styles.thStatus}>Status</div>
                 <div className={styles.thParticipantes}>Participantes</div>
-                <div className={styles.thReceita}>Receita</div>
                 <div className={styles.thAcoes}>Ações</div>
               </div>
               
@@ -236,7 +225,6 @@ export default function MeusEventos() {
                     </span>
                   </div>
                   <div className={styles.tdParticipantes}>{evento.participantes}</div>
-                  <div className={styles.tdReceita}>{formatarMoeda(evento.receita)}</div>
                   <div className={styles.tdAcoes}>
                     <button 
                       className={styles.detalhesButton}
@@ -304,10 +292,7 @@ export default function MeusEventos() {
                   <span className={styles.detalheValor}>{eventoSelecionado.participantes}</span>
                 </div>
                 
-                <div className={styles.detalheItem}>
-                  <span className={styles.detalheLabel}>Receita Total:</span>
-                  <span className={styles.detalheValor}>{formatarMoeda(eventoSelecionado.receita)}</span>
-                </div>
+                
                 
                 <div className={styles.detalheItem}>
                   <span className={styles.detalheLabel}>Categorias:</span>
@@ -330,18 +315,9 @@ export default function MeusEventos() {
                     <div className={styles.estatisticaLabel}>Participantes</div>
                   </div>
                   
-                  <div className={styles.estatisticaCard}>
-                    <div className={styles.estatisticaValor}>{formatarMoeda(eventoSelecionado.receita)}</div>
-                    <div className={styles.estatisticaLabel}>Receita Total</div>
-                  </div>
+                 
                   
                   <div className={styles.estatisticaCard}>
-                    <div className={styles.estatisticaValor}>
-                      {eventoSelecionado.participantes > 0 
-                        ? formatarMoeda(eventoSelecionado.receita / eventoSelecionado.participantes) 
-                        : 'R$ 0,00'}
-                    </div>
-                    <div className={styles.estatisticaLabel}>Média por Participante</div>
                   </div>
                 </div>
               </div>
