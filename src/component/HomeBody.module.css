@@ -50,3 +50,23 @@
   font-size: 1.5rem;
   letter-spacing: 1px;
 }
+
+.introText {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 500;
+  margin-top: 40px;
+  animation: slideDown 1s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes slideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

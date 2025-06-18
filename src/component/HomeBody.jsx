@@ -61,7 +61,7 @@ export default function HomeBody() {
   return (
     <div className={styles.main}>
       <Carrossel />
-      <p>Corpo</p>
+      <p className={styles.introText}>Transforme sua garagem em um evento incrível — descubra, participe ou anuncie agora!</p>
     </div>
   );
 }
