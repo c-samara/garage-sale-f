@@ -8,6 +8,7 @@ import EventosProximos from './pages/EventosProximos.jsx'
 import MeusEventos from './pages/MeusEventos.jsx'
 import Pagamentos from './pages/Pagamentos.jsx'
 import CadastroEspaco from './pages/CadastroEspaco.jsx'
+import EventoDetalhes from './pages/EventoDetalhes';
 import { Routes, Route} from "react-router-dom"
 import './index.css'
 
@@ -19,7 +20,8 @@ function App() {
     <Route path="/cadastro-evento" element={<CadastroEvento />} />
     <Route path="/eventos-proximos" element={<EventosProximos />} />
     <Route path="/meus-eventos" element={<MeusEventos />} />
-    <Route path="/meus-espacos/novo" element={<CadastroEspaco />} />
+    <Route path="/meus-espacos/novo" element={<CadastroEspaco />} />   
+    <Route path="/evento/:id" element={<EventoDetalhes />} />
   </Routes>
 
 }

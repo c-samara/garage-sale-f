@@ -47,6 +47,14 @@ export default function MeusEspacos() {
       <main className={styles.main}>
         <div className={styles.pageHeader}>
           <h1>Meus Espaços</h1>
+          <div>
+            <button
+              className={styles.saveButton}
+              onClick={() => navigate('/meus-espacos/novo')}
+            >
+              + Cadastrar Novo Espaço
+            </button>
+          </div>
         </div>
 
         {loading && <p>Carregando espaços…</p>}
@@ -56,20 +64,23 @@ export default function MeusEspacos() {
           <div className={styles.espacosGrid}>
             {espacos.map((esp) => (
               <div key={esp.id} className={styles.espacoCard}>
-                <img src={esp.imagens[0]} alt={esp.nome} />
-                <h2>{esp.nome}</h2>
-                <p>{esp.endereco}</p>
-                <p>Capacidade: {esp.capacidade}</p>
-                <p>Preço: R$ {esp.preco}/dia</p>
-                <p>Tags: {esp.tags.join(', ')}</p>
+                <img src={esp.imagens[0]} alt={esp.nome} className={styles.espacoImage} />
+                <div className={styles.espacoContent}>
+                  <h2>{esp.nome}</h2>
+                  <p className={styles.espacoEndereco}>{esp.endereco}</p>
+                  <div className={styles.espacoDetails}>
+                    <span>Capacidade: {esp.capacidade}</span>
+                    <span>R$ {esp.preco}/dia</span>
+                  </div>
+                  <p className={styles.espacoDescricao}>{esp.descricao}</p>
+                  <p><strong>Tags:</strong> {esp.tags.join(', ')}</p>
+                </div>
               </div>
             ))}
           </div>
         )}
       </main>
-<button className={styles.saveButton} onClick={() => navigate('/meus-espacos/novo')}>
-            + Cadastrar Novo Espaço
-          </button>
+
       <Footer />
     </div>
   );
