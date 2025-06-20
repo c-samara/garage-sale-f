@@ -47,9 +47,7 @@ export default function MeusEspacos() {
       <main className={styles.main}>
         <div className={styles.pageHeader}>
           <h1>Meus Espaços</h1>
-          <button onClick={() => navigate('/meus-espacos/novo')}>
-            + Cadastrar Novo Espaço
-          </button>
+          
         </div>
 
         {loading && <p>Carregando espaços…</p>}
@@ -70,7 +68,9 @@ export default function MeusEspacos() {
           </div>
         )}
       </main>
-
+        <button onClick={() => navigate('/meus-espacos/novo')}>
+            + Cadastrar Novo Espaço
+          </button>
       <Footer />
     </div>
   );

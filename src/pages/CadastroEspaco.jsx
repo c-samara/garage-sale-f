@@ -8,29 +8,26 @@ export default function CadastroEspaco() {
   const navigate = useNavigate();
 
   const blankEspaco = {
-    host_id: 61,
-    host_name: '',
-    host_last_name: '',
-    host_phone_number: '',
-    host_email: '',
-    host_cpf: '',
+    host_id: 81,
     titulo: '',
     descricao: '',
     endereco: '',
     preco: '',
     capacidade: '',
-    tags: []
+    tags: [],
+    imagemUrl: ''
   };
 
   const [currentEspaco, setCurrentEspaco] = useState(blankEspaco);
   const [tagOptions, setTagOptions] = useState([]);
+  const [imagemArquivo, setImagemArquivo] = useState(null);
 
   useEffect(() => {
     async function fetchTags() {
       try {
         const res = await fetch('https://apex.oracle.com/pls/apex/garage_sale/api/tags/');
         const data = await res.json();
-        setTagOptions(data.items); // deve conter { id, name }
+        setTagOptions(data.items);
       } catch {
         alert('Erro ao carregar tags');
       }
@@ -56,13 +53,49 @@ export default function CadastroEspaco() {
     }
   };
 
+  const uploadParaImgur = async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const res = await fetch('https://cors-anywhere.herokuapp.com/https://api.imgur.com/3/image', {
+        method: 'POST',
+        headers: {
+          Authorization: 'Client-ID a32b7f3f56b55fb'
+        },
+        body: formData
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.warn('Erro no Imgur, continuando sem imagem:', errorText);
+        return '';
+      }
+
+      const data = await res.json();
+      if (data.success) {
+        return data.data.link;
+      } else {
+        console.warn('Imgur falhou, mas continuando sem imagem.');
+        return '';
+      }
+    } catch (error) {
+      console.warn('Erro ao enviar para Imgur, continuando sem imagem.', error);
+      return '';
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Converte nomes de tags em IDs
     const tagIds = currentEspaco.tags
       .map((tagName) => tagOptions.find((t) => t.name === tagName)?.id)
-      .filter(Boolean); // remove undefined
+      .filter(Boolean);
+
+    let imagemUrl = '';
+    if (imagemArquivo) {
+      imagemUrl = await uploadParaImgur(imagemArquivo);
+    }
 
     const payload = {
       host_id: currentEspaco.host_id,
@@ -71,7 +104,8 @@ export default function CadastroEspaco() {
       address: currentEspaco.endereco,
       price: Number(currentEspaco.preco),
       capacity: currentEspaco.capacidade,
-      tags: tagIds
+      tags: tagIds,
+      imagens: imagemUrl ? [imagemUrl] : []
     };
 
     try {
@@ -99,103 +133,28 @@ export default function CadastroEspaco() {
           <form onSubmit={handleSubmit}>
             <div className={styles.formGrid}>
               <div className={styles.formGroup}>
-                <label>Nome do Host</label>
-                <input
-                  type="text"
-                  name="host_name"
-                  value={currentEspaco.host_name}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>Sobrenome do Host</label>
-                <input
-                  type="text"
-                  name="host_last_name"
-                  value={currentEspaco.host_last_name}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>Email do Host</label>
-                <input
-                  type="email"
-                  name="host_email"
-                  value={currentEspaco.host_email}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>Telefone do Host</label>
-                <input
-                  type="text"
-                  name="host_phone_number"
-                  value={currentEspaco.host_phone_number}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>CPF do Host</label>
-                <input
-                  type="text"
-                  name="host_cpf"
-                  value={currentEspaco.host_cpf}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className={styles.formGroup}>
                 <label>Título do Espaço</label>
-                <input
-                  type="text"
-                  name="titulo"
-                  value={currentEspaco.titulo}
-                  onChange={handleChange}
-                  required
-                />
+                <input type="text" name="titulo" value={currentEspaco.titulo} onChange={handleChange} required />
               </div>
               <div className={styles.formGroup}>
                 <label>Endereço</label>
-                <input
-                  type="text"
-                  name="endereco"
-                  value={currentEspaco.endereco}
-                  onChange={handleChange}
-                  required
-                />
+                <input type="text" name="endereco" value={currentEspaco.endereco} onChange={handleChange} required />
               </div>
               <div className={styles.formGroup}>
                 <label>Capacidade</label>
-                <input
-                  type="text"
-                  name="capacidade"
-                  value={currentEspaco.capacidade}
-                  onChange={handleChange}
-                  required
-                />
+                <input type="text" name="capacidade" value={currentEspaco.capacidade} onChange={handleChange} required />
               </div>
               <div className={styles.formGroup}>
                 <label>Preço (R$)</label>
-                <input
-                  type="number"
-                  name="preco"
-                  value={currentEspaco.preco}
-                  onChange={handleChange}
-                  required
-                />
+                <input type="number" name="preco" value={currentEspaco.preco} onChange={handleChange} required />
               </div>
               <div className={styles.formGroup} style={{ gridColumn: '1 / -1' }}>
                 <label>Descrição</label>
-                <textarea
-                  name="descricao"
-                  value={currentEspaco.descricao}
-                  onChange={handleChange}
-                  required
-                />
+                <textarea name="descricao" value={currentEspaco.descricao} onChange={handleChange} required />
+              </div>
+              <div className={styles.formGroup} style={{ gridColumn: '1 / -1' }}>
+                <label>Imagem do Espaço</label>
+                <input type="file" accept="image/*" onChange={(e) => setImagemArquivo(e.target.files[0])} />
               </div>
             </div>
 
@@ -218,14 +177,8 @@ export default function CadastroEspaco() {
             </fieldset>
 
             <div className={styles.formActions}>
-              <button type="submit" className={styles.saveButton}>
-                Cadastrar
-              </button>
-              <button
-                type="button"
-                className={styles.cancelButton}
-                onClick={() => navigate('/meus-espacos')}
-              >
+              <button type="submit" className={styles.saveButton}>Cadastrar</button>
+              <button type="button" className={styles.cancelButton} onClick={() => navigate('/meus-espacos')}>
                 Cancelar
               </button>
             </div>
