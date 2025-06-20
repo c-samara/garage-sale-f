@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../component/Header';
 import Footer from '../component/Footer';
 import styles from './CadastroEvento.module.css';
 
 export default function CadastroEvento() {
-  /* ---------- STATE ---------- */
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     nome: '',
     data: '',
@@ -18,7 +20,6 @@ export default function CadastroEvento() {
   const [espacosDisponiveis, setEspacosDisponiveis] = useState([]);
   const [modalAberto, setModalAberto] = useState(false);
 
-  /* ---------- CARREGAR ESPAÇOS ---------- */
   useEffect(() => {
     (async () => {
       try {
@@ -40,11 +41,9 @@ export default function CadastroEvento() {
     })();
   }, []);
 
-  /* ---------- MAPA DE CATEGORIAS ---------- */
   const mapCategoriaParaId = (cat) =>
     ({ roupas: 21, livros: 22, eletronicos: 23, moveis: 24, brinquedos: 25, artesanato: 26, outros: 27 }[cat] ?? 22);
 
-  /* ---------- HANDLERS ---------- */
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleCategoriaChange = ({ target: { value, checked } }) =>
@@ -58,15 +57,14 @@ export default function CadastroEvento() {
     setModalAberto(false);
   };
 
-  /* ---------- SUBMIT ---------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.espacoId) return alert('Selecione um espaço antes de cadastrar.');
 
-    const [ano, mes, dia] = formData.data.split('-');      // yyyy-mm-dd → dd/mm/yyyy
+    const [ano, mes, dia] = formData.data.split('-');
     const payload = {
       owner_id: 61,
-      space_id: parseInt(formData.espacoId, 10),            // vem do backend
+      space_id: parseInt(formData.espacoId, 10),
       name: formData.nome,
       description: formData.descricao,
       product_categories: formData.categorias.length
@@ -74,8 +72,8 @@ export default function CadastroEvento() {
         : [22],
       event_date: `${dia}/${mes}/${ano}`,
       event_type: formData.tipoEvento,
-      begins_at: formData.horarioInicio,                    // "HH:MM"
-      finishes_at: formData.horarioFim                      // "HH:MM"
+      begins_at: formData.horarioInicio,
+      finishes_at: formData.horarioFim
     };
 
     console.log('Payload enviado:', JSON.stringify(payload, null, 2));
@@ -86,18 +84,20 @@ export default function CadastroEvento() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
+
       if (!res.ok) {
         console.error(await res.json());
         return alert('Erro ao cadastrar evento.');
       }
+
       alert('Evento cadastrado com sucesso!');
+      navigate('/meus-eventos');
     } catch (err) {
       console.error(err);
       alert('Falha de conexão.');
     }
   };
 
-  /* ---------- RENDER ---------- */
   const espacoSelecionado = espacosDisponiveis.find((e) => e.id === +formData.espacoId);
 
   return (
@@ -107,13 +107,11 @@ export default function CadastroEvento() {
         <h1>Cadastrar Novo Evento</h1>
 
         <form onSubmit={handleSubmit} className={styles.form}>
-          {/* Nome / Data / Horários */}
           <label>Nome<input name="nome" value={formData.nome} onChange={handleChange} required /></label>
           <label>Data<input type="date" name="data" value={formData.data} onChange={handleChange} required /></label>
           <label>Início<input type="time" name="horarioInicio" value={formData.horarioInicio} onChange={handleChange} required /></label>
           <label>Fim<input type="time" name="horarioFim" value={formData.horarioFim} onChange={handleChange} required /></label>
 
-          {/* Tipo */}
           <label>Tipo
             <select name="tipoEvento" value={formData.tipoEvento} onChange={handleChange}>
               <option value="Bazar">Bazar</option>
@@ -123,10 +121,11 @@ export default function CadastroEvento() {
             </select>
           </label>
 
-          {/* Descrição */}
+          <button type="button" onClick={() => setModalAberto(true)}>Selecionar Espaço</button>
+          {espacoSelecionado && <p>Espaço: <strong>{espacoSelecionado.nome}</strong></p>}
+
           <label>Descrição<textarea name="descricao" value={formData.descricao} onChange={handleChange} required /></label>
 
-          {/* Categorias */}
           <fieldset><legend>Categorias</legend>
             {['roupas','livros','eletronicos','moveis','brinquedos','artesanato','outros'].map((cat) => (
               <label key={cat}>
@@ -140,15 +139,10 @@ export default function CadastroEvento() {
             ))}
           </fieldset>
 
-          {/* Espaço */}
-          <button type="button" onClick={() => setModalAberto(true)}>Selecionar Espaço</button>
-          {espacoSelecionado && <p>Espaço: <strong>{espacoSelecionado.nome}</strong></p>}
-
           <button type="submit" className={styles.saveButton}>Cadastrar Evento</button>
         </form>
       </main>
 
-      {/* MODAL ESPAÇOS */}
       {modalAberto && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>
