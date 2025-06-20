@@ -4,313 +4,165 @@ import Footer from '../component/Footer';
 import styles from './CadastroEvento.module.css';
 
 export default function CadastroEvento() {
+  /* ---------- STATE ---------- */
   const [formData, setFormData] = useState({
     nome: '',
     data: '',
     horarioInicio: '',
     horarioFim: '',
-    tipoEvento: 'venda_garagem',
+    tipoEvento: 'Bazar',
     categorias: [],
     descricao: '',
-    espacoId: '',
-    imagens: []
+    espacoId: ''
   });
-
-  const [imagemPreview, setImagemPreview] = useState(null);
   const [espacosDisponiveis, setEspacosDisponiveis] = useState([]);
   const [modalAberto, setModalAberto] = useState(false);
 
+  /* ---------- CARREGAR ESPAÇOS ---------- */
   useEffect(() => {
-    const dadosFicticios = [
-      { id: 1, nome: 'Salão Comunitário', endereco: 'Rua das Flores, 123 - Centro', preco: 150 },
-      { id: 2, nome: 'Garagem Vila Mariana', endereco: 'Av. Paulista, 1000 - Vila Mariana', preco: 80 },
-      { id: 3, nome: 'Espaço Cultural', endereco: 'Rua Augusta, 500 - Consolação', preco: 200 }
-    ];
-    setEspacosDisponiveis(dadosFicticios);
+    (async () => {
+      try {
+        const res = await fetch('https://apex.oracle.com/pls/apex/garage_sale/api/spaces/');
+        if (!res.ok) throw new Error(`Erro ${res.status}`);
+        const { items } = await res.json();
+        setEspacosDisponiveis(
+          items.map((it) => ({
+            id: it.id,
+            nome: it.title,
+            endereco: it.endereco,
+            preco: it.preco
+          }))
+        );
+      } catch (err) {
+        console.error(err);
+        alert('Erro ao carregar espaços.');
+      }
+    })();
   }, []);
 
-  const categoriasOpcoes = [
-    { id: 'roupas', nome: 'Roupas e Acessórios' },
-    { id: 'livros', nome: 'Livros e Revistas' },
-    { id: 'eletronicos', nome: 'Eletrônicos' },
-    { id: 'moveis', nome: 'Móveis' },
-    { id: 'brinquedos', nome: 'Brinquedos' },
-    { id: 'artesanato', nome: 'Artesanato' },
-    { id: 'outros', nome: 'Outros' }
-  ];
+  /* ---------- MAPA DE CATEGORIAS ---------- */
+  const mapCategoriaParaId = (cat) =>
+    ({ roupas: 21, livros: 22, eletronicos: 23, moveis: 24, brinquedos: 25, artesanato: 26, outros: 27 }[cat] ?? 22);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
+  /* ---------- HANDLERS ---------- */
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const handleCategoriaChange = ({ target: { value, checked } }) =>
+    setFormData((p) => ({
+      ...p,
+      categorias: checked ? [...p.categorias, value] : p.categorias.filter((c) => c !== value)
+    }));
+
+  const selecionarEspaco = (id) => {
+    setFormData((p) => ({ ...p, espacoId: id.toString() }));
+    setModalAberto(false);
   };
 
-  const handleCategoriaChange = (e) => {
-    const { value, checked } = e.target;
-    if (checked) {
-      setFormData({
-        ...formData,
-        categorias: [...formData.categorias, value]
+  /* ---------- SUBMIT ---------- */
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.espacoId) return alert('Selecione um espaço antes de cadastrar.');
+
+    const [ano, mes, dia] = formData.data.split('-');      // yyyy-mm-dd → dd/mm/yyyy
+    const payload = {
+      owner_id: 61,
+      space_id: parseInt(formData.espacoId, 10),            // vem do backend
+      name: formData.nome,
+      description: formData.descricao,
+      product_categories: formData.categorias.length
+        ? formData.categorias.map(mapCategoriaParaId)
+        : [22],
+      event_date: `${dia}/${mes}/${ano}`,
+      event_type: formData.tipoEvento,
+      begins_at: formData.horarioInicio,                    // "HH:MM"
+      finishes_at: formData.horarioFim                      // "HH:MM"
+    };
+
+    console.log('Payload enviado:', JSON.stringify(payload, null, 2));
+
+    try {
+      const res = await fetch('https://apex.oracle.com/pls/apex/garage_sale/api/events/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
       });
-    } else {
-      setFormData({
-        ...formData,
-        categorias: formData.categorias.filter(cat => cat !== value)
-      });
+      if (!res.ok) {
+        console.error(await res.json());
+        return alert('Erro ao cadastrar evento.');
+      }
+      alert('Evento cadastrado com sucesso!');
+    } catch (err) {
+      console.error(err);
+      alert('Falha de conexão.');
     }
   };
 
-  const handleImagemChange = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const maxSizeMB = 25;
-  const maxSizeBytes = maxSizeMB * 1024 * 1024;
-
-  if (file.size > maxSizeBytes) {
-    alert(`O tamanho da imagem excede o máximo permitido de ${maxSizeMB}MB.`);
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onloadend = () => {
-    setImagemPreview(reader.result);
-    setFormData({
-      ...formData,
-      imagens: [reader.result]
-    });
-  };
-  reader.readAsDataURL(file);
-};
-
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Dados do evento:', formData);
-    alert('Evento cadastrado com sucesso!');
-  };
-
-  const calcularPrecoTotal = () => {
-    const espacoSelecionado = espacosDisponiveis.find(
-      espaco => espaco.id === parseInt(formData.espacoId)
-    );
-    return espacoSelecionado ? espacoSelecionado.preco : 0;
-  };
-
-  const abrirModal = () => setModalAberto(true);
-  const fecharModal = () => setModalAberto(false);
-
-  const selecionarEspaco = (espacoId) => {
-    setFormData({
-      ...formData,
-      espacoId: espacoId.toString()
-    });
-    fecharModal();
-  };
-
-  const espacoSelecionado = espacosDisponiveis.find(
-    e => e.id === parseInt(formData.espacoId)
-  );
+  /* ---------- RENDER ---------- */
+  const espacoSelecionado = espacosDisponiveis.find((e) => e.id === +formData.espacoId);
 
   return (
     <div className={styles.container}>
       <Header />
-
       <main className={styles.main}>
-        <div className={styles.formContainer}>
-          <h1>Cadastrar Novo Evento</h1>
+        <h1>Cadastrar Novo Evento</h1>
 
-          <form onSubmit={handleSubmit} className={styles.form}>
-            <section className={styles.formSection}>
-              <h2>Informações Básicas</h2>
+        <form onSubmit={handleSubmit} className={styles.form}>
+          {/* Nome / Data / Horários */}
+          <label>Nome<input name="nome" value={formData.nome} onChange={handleChange} required /></label>
+          <label>Data<input type="date" name="data" value={formData.data} onChange={handleChange} required /></label>
+          <label>Início<input type="time" name="horarioInicio" value={formData.horarioInicio} onChange={handleChange} required /></label>
+          <label>Fim<input type="time" name="horarioFim" value={formData.horarioFim} onChange={handleChange} required /></label>
 
-              <div className={styles.formGroup}>
-                <label htmlFor="nome">Nome do Evento</label>
+          {/* Tipo */}
+          <label>Tipo
+            <select name="tipoEvento" value={formData.tipoEvento} onChange={handleChange}>
+              <option value="Bazar">Bazar</option>
+              <option value="Feira">Feira</option>
+              <option value="Troca">Troca</option>
+              <option value="Venda de Garagem">Venda de Garagem</option>
+            </select>
+          </label>
+
+          {/* Descrição */}
+          <label>Descrição<textarea name="descricao" value={formData.descricao} onChange={handleChange} required /></label>
+
+          {/* Categorias */}
+          <fieldset><legend>Categorias</legend>
+            {['roupas','livros','eletronicos','moveis','brinquedos','artesanato','outros'].map((cat) => (
+              <label key={cat}>
                 <input
-                  type="text"
-                  id="nome"
-                  name="nome"
-                  value={formData.nome}
-                  onChange={handleChange}
-                  required
-                  placeholder="Ex: Bazar de Livros Usados"
-                />
-              </div>
+                  type="checkbox"
+                  value={cat}
+                  checked={formData.categorias.includes(cat)}
+                  onChange={handleCategoriaChange}
+                /> {cat}
+              </label>
+            ))}
+          </fieldset>
 
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label htmlFor="data">Data</label>
-                  <input
-                    type="date"
-                    id="data"
-                    name="data"
-                    value={formData.data}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
+          {/* Espaço */}
+          <button type="button" onClick={() => setModalAberto(true)}>Selecionar Espaço</button>
+          {espacoSelecionado && <p>Espaço: <strong>{espacoSelecionado.nome}</strong></p>}
 
-                <div className={styles.formGroup}>
-                  <label htmlFor="horarioInicio">Horário de Início</label>
-                  <input
-                    type="time"
-                    id="horarioInicio"
-                    name="horarioInicio"
-                    value={formData.horarioInicio}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label htmlFor="horarioFim">Horário de Término</label>
-                  <input
-                    type="time"
-                    id="horarioFim"
-                    name="horarioFim"
-                    value={formData.horarioFim}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label htmlFor="tipoEvento">Tipo de Evento</label>
-                <select
-                  id="tipoEvento"
-                  name="tipoEvento"
-                  value={formData.tipoEvento}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="venda_garagem">Venda de Garagem</option>
-                  <option value="bazar">Bazar</option>
-                  <option value="feira">Feira</option>
-                  <option value="troca">Evento de Troca</option>
-                </select>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label htmlFor="descricao">Descrição do Evento</label>
-                <textarea
-                  id="descricao"
-                  name="descricao"
-                  value={formData.descricao}
-                  onChange={handleChange}
-                  rows="4"
-                  required
-                  placeholder="Descreva seu evento, o que será vendido, público-alvo, etc."
-                ></textarea>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label htmlFor="imagem">Imagem do Evento</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImagemChange}
-                />
-                {imagemPreview && (
-                  <img
-                    src={imagemPreview}
-                    alt="Pré-visualização"
-                    style={{ marginTop: '10px', maxWidth: '100%', borderRadius: '8px' }}
-                  />
-                )}
-              </div>
-            </section>
-
-            <section className={styles.formSection}>
-              <h2>Categorias de Produtos</h2>
-              <p className={styles.sectionDescription}>
-                Selecione as categorias de produtos que estarão disponíveis no seu evento:
-              </p>
-
-              <div className={styles.categoriasGrid}>
-                {categoriasOpcoes.map(categoria => (
-                  <div key={categoria.id} className={styles.categoriaCheckbox}>
-                    <input
-                      type="checkbox"
-                      id={`categoria-${categoria.id}`}
-                      name="categorias"
-                      value={categoria.id}
-                      checked={formData.categorias.includes(categoria.id)}
-                      onChange={handleCategoriaChange}
-                    />
-                    <label htmlFor={`categoria-${categoria.id}`}>{categoria.nome}</label>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <section className={styles.formSection}>
-              <h2>Local do Evento</h2>
-              <div className={styles.formGroup}>
-                <button type="button" onClick={abrirModal} className={styles.selectButton}>
-                  Selecionar Espaço
-                </button>
-                {espacoSelecionado && (
-                  <p className={styles.espacoSelecionado}>
-                    Espaço escolhido: <strong>{espacoSelecionado.nome}</strong> – {espacoSelecionado.endereco}
-                  </p>
-                )}
-              </div>
-            </section>
-
-            <section className={styles.resumoSection}>
-              <h2>Resumo do Pedido</h2>
-              <div className={styles.resumoCard}>
-                <div className={styles.resumoItem}>
-                  <span>Aluguel do espaço:</span>
-                  <span>
-                    {espacoSelecionado ? `R$ ${espacoSelecionado.preco},00` : 'Selecione um espaço'}
-                  </span>
-                </div>
-
-                <div className={styles.resumoTotal}>
-                  <span>Total:</span>
-                  <span>R$ {calcularPrecoTotal()},00</span>
-                </div>
-              </div>
-            </section>
-
-            <div className={styles.formActions}>
-              <button type="submit" className={styles.submitButton}>
-                Cadastrar Evento
-              </button>
-            </div>
-          </form>
-        </div>
+          <button type="submit" className={styles.saveButton}>Cadastrar Evento</button>
+        </form>
       </main>
 
+      {/* MODAL ESPAÇOS */}
       {modalAberto && (
         <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
-            <div className={styles.modalHeader}>
-              <h3>Selecione um Espaço</h3>
-              <button onClick={fecharModal} className={styles.fecharModal}>×</button>
-            </div>
-            <div className={styles.modalBody}>
-              {espacosDisponiveis.map(espaco => (
-                <div key={espaco.id} className={styles.espacoItem}>
-                  <p>
-                    <strong>{espaco.nome}</strong> <br />
-                    {espaco.endereco} <br />
-                    R$ {espaco.preco},00 / dia
-                  </p>
-                  <button onClick={() => selecionarEspaco(espaco.id)}>
-                    Selecionar
-                  </button>
-                </div>
-              ))}
-            </div>
+          <div className={styles.modalContent}>
+            <h2>Escolher Espaço</h2>
+            {espacosDisponiveis.map((esp) => (
+              <div key={esp.id}>
+                <p>{esp.nome} — {esp.endereco} — R$ {esp.preco},00</p>
+                <button onClick={() => selecionarEspaco(esp.id)}>Selecionar</button>
+              </div>
+            ))}
+            <button onClick={() => setModalAberto(false)}>Fechar</button>
           </div>
         </div>
       )}
-
       <Footer />
     </div>
   );
