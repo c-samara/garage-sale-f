@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './HomeBody.module.css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
@@ -6,7 +6,7 @@ import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import 'swiper/css/autoplay'; // opcional
+import 'swiper/css/autoplay';
 
 function Carrossel() {
   const slides = [
@@ -58,10 +58,68 @@ function Carrossel() {
 }
 
 export default function HomeBody() {
+  const [eventos, setEventos] = useState([]);
+  const [showHelpPrompt, setShowHelpPrompt] = useState(false);
+
+  useEffect(() => {
+    async function fetchEventos() {
+      try {
+        const res = await fetch('https://apex.oracle.com/pls/apex/garage_sale/api/events/');
+        if (!res.ok) throw new Error('Erro ao carregar eventos');
+        const data = await res.json();
+        setEventos(data.items.slice(-4).reverse());
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchEventos();
+  }, []);
+
+  useEffect(() => {
+    let timeout = setTimeout(() => setShowHelpPrompt(true), 5000);
+    const resetTimer = () => {
+      clearTimeout(timeout);
+      setShowHelpPrompt(false);
+      timeout = setTimeout(() => setShowHelpPrompt(true), 5000);
+    };
+
+    window.addEventListener('mousemove', resetTimer);
+    window.addEventListener('keydown', resetTimer);
+
+    return () => {
+      clearTimeout(timeout);
+      window.removeEventListener('mousemove', resetTimer);
+      window.removeEventListener('keydown', resetTimer);
+    };
+  }, []);
+
   return (
     <div className={styles.main}>
       <Carrossel />
       <p className={styles.introText}>Transforme sua garagem em um evento incrível — descubra, participe ou anuncie agora!</p>
+
+      <section className={styles.latestEvents}>
+        <h2>🕵️ Destaques na sua região</h2>
+        <div className={styles.eventGrid}>
+          {eventos.map((evento, index) => (
+            <div key={evento.id} className={styles.eventCard}>
+              {index === 0 && (
+                <div className={styles.oportunidadeBadge}>Boa oportunidade</div>
+              )}
+              <h3>{evento.name}</h3>
+              <p><strong>Data:</strong> {evento.event_date}</p>
+              <p><strong>Horário:</strong> {evento.begins_at} - {evento.finishes_at}</p>
+              <p><strong>Tipo:</strong> {evento.event_type}</p>
+              <p><strong>Categoria:</strong> {evento.product_category}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div className={styles.chatBubbleIcon}>
+        💬
+        {showHelpPrompt && <span className={styles.helpPrompt}>Precisa de ajuda?</span>}
+      </div>
     </div>
   );
 }
