@@ -12,7 +12,7 @@ export default function CadastroEvento() {
     data: '',
     horarioInicio: '',
     horarioFim: '',
-    tipoEvento: 'Bazar',
+    tipoEvento: '',
     categorias: [],
     descricao: '',
     espacoId: ''
@@ -42,9 +42,10 @@ export default function CadastroEvento() {
   }, []);
 
   const mapCategoriaParaId = (cat) =>
-    ({ roupas: 21, livros: 22, eletronicos: 23, moveis: 24, brinquedos: 25, artesanato: 26, outros: 27 }[cat] ?? 22);
+    ({ roupas: 21, livros: 22, eletronicos: 23, moveis: 24, brinquedos: 25, artesanato: 26, outros: 27 }[cat]);
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleCategoriaChange = ({ target: { value, checked } }) =>
     setFormData((p) => ({
@@ -59,17 +60,28 @@ export default function CadastroEvento() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.espacoId) return alert('Selecione um espaço antes de cadastrar.');
+
+    // validações básicas
+    if (!formData.nome || !formData.data || !formData.horarioInicio || !formData.horarioFim || !formData.tipoEvento || !formData.descricao) {
+      return alert('Preencha todos os campos obrigatórios.');
+    }
+
+    if (!formData.espacoId || !espacosDisponiveis.some((esp) => esp.id === parseInt(formData.espacoId))) {
+      return alert('Selecione um espaço válido antes de cadastrar.');
+    }
+
+    const categoriasValidas = formData.categorias.map(mapCategoriaParaId).filter(Boolean);
+    if (!categoriasValidas.length) {
+      return alert('Selecione ao menos uma categoria válida.');
+    }
 
     const [ano, mes, dia] = formData.data.split('-');
     const payload = {
       owner_id: 61,
       space_id: parseInt(formData.espacoId, 10),
-      name: formData.nome,
-      description: formData.descricao,
-      product_categories: formData.categorias.length
-        ? formData.categorias.map(mapCategoriaParaId)
-        : [22],
+      name: formData.nome.trim(),
+      description: formData.descricao.trim(),
+      product_categories: categoriasValidas,
       event_date: `${dia}/${mes}/${ano}`,
       event_type: formData.tipoEvento,
       begins_at: formData.horarioInicio,
@@ -86,8 +98,9 @@ export default function CadastroEvento() {
       });
 
       if (!res.ok) {
-        console.error(await res.json());
-        return alert('Erro ao cadastrar evento.');
+        const erroTexto = await res.text();
+        console.error('Erro:', erroTexto);
+        return alert('Erro ao cadastrar evento.\n' + erroTexto);
       }
 
       alert('Evento cadastrado com sucesso!');
@@ -113,7 +126,8 @@ export default function CadastroEvento() {
           <label>Fim<input type="time" name="horarioFim" value={formData.horarioFim} onChange={handleChange} required /></label>
 
           <label>Tipo
-            <select name="tipoEvento" value={formData.tipoEvento} onChange={handleChange}>
+            <select name="tipoEvento" value={formData.tipoEvento} onChange={handleChange} required>
+              <option value="">Selecione</option>
               <option value="Bazar">Bazar</option>
               <option value="Feira">Feira</option>
               <option value="Troca">Troca</option>
@@ -129,7 +143,7 @@ export default function CadastroEvento() {
           <fieldset>
             <legend>Categorias</legend>
             <div className={styles.tagsGrid}>
-              {['roupas','livros','eletronicos','moveis','brinquedos','artesanato','outros'].map((cat) => (
+              {['roupas', 'livros', 'eletronicos', 'moveis', 'brinquedos', 'artesanato', 'outros'].map((cat) => (
                 <label key={cat}>
                   <input
                     type="checkbox"
