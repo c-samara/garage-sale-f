@@ -14,6 +14,24 @@
   align-items: flex-start;
 }
 
+.spaceDetailsCard {
+  background-color: #e8e8e8;
+  border-radius: 10px;
+  display: flex-column;
+  padding: 0.5rem;
+}
+
+.spaceDetailsCard h3{
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.spaceDetailsCard div {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+
 /* ---------- Cartão de detalhes ---------- */
 .detailsCard {
   background-color: #ffffff;

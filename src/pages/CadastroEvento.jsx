@@ -19,9 +19,11 @@ export default function CadastroEvento() {
   });
   const [espacosDisponiveis, setEspacosDisponiveis] = useState([]);
   const [modalAberto, setModalAberto] = useState(false);
+  const [categoriasOpcoes, setCategoriasOpcoes] = useState([]);
 
   useEffect(() => {
-    (async () => {
+
+    const buscarEspacos = async() => {
       try {
         const res = await fetch('https://apex.oracle.com/pls/apex/garage_sale/api/spaces/');
         if (!res.ok) throw new Error(`Erro ${res.status}`);
@@ -30,28 +32,52 @@ export default function CadastroEvento() {
           items.map((it) => ({
             id: it.id,
             nome: it.title,
-            endereco: it.endereco,
-            preco: it.preco
+            descricao: it.description,
+            endereco: it.address,
+            preco: it.price
           }))
         );
       } catch (err) {
         console.error(err);
         alert('Erro ao carregar espaços.');
       }
-    })();
-  }, []);
+    }
 
-  const mapCategoriaParaId = (cat) =>
-    ({ roupas: 21, livros: 22, eletronicos: 23, moveis: 24, brinquedos: 25, artesanato: 26, outros: 27 }[cat]);
+
+    const buscarCategorias = async() => {
+       const response = await fetch("https://apex.oracle.com/pls/apex/garage_sale/api/product-categories/", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      });
+      
+      const data = await response.json();
+      setCategoriasOpcoes(data.items);
+    }
+
+    buscarCategorias();
+    buscarEspacos();
+  }, []);
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleCategoriaChange = ({ target: { value, checked } }) =>
-    setFormData((p) => ({
-      ...p,
-      categorias: checked ? [...p.categorias, value] : p.categorias.filter((c) => c !== value)
-    }));
+   const handleCategoriaChange = (e) => {
+    const id = Number(e.target.value); 
+    setFormData((prev) => {
+      const selected = prev.categorias.includes(id);
+      const newCategories = selected
+        ? prev.categorias.filter((catId) => catId !== id)
+        : [...prev.categorias, id];
+
+      return {
+        ...prev,
+        categorias: newCategories,
+      };
+    });
+  };
+
 
   const selecionarEspaco = (id) => {
     setFormData((p) => ({ ...p, espacoId: id.toString() }));
@@ -60,6 +86,8 @@ export default function CadastroEvento() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    console.log(espacosDisponiveis)
 
     // validações básicas
     if (!formData.nome || !formData.data || !formData.horarioInicio || !formData.horarioFim || !formData.tipoEvento || !formData.descricao) {
@@ -70,8 +98,7 @@ export default function CadastroEvento() {
       return alert('Selecione um espaço válido antes de cadastrar.');
     }
 
-    const categoriasValidas = formData.categorias.map(mapCategoriaParaId).filter(Boolean);
-    if (!categoriasValidas.length) {
+    if (!formData.categorias.length) {
       return alert('Selecione ao menos uma categoria válida.');
     }
 
@@ -81,7 +108,7 @@ export default function CadastroEvento() {
       space_id: parseInt(formData.espacoId, 10),
       name: formData.nome.trim(),
       description: formData.descricao.trim(),
-      product_categories: categoriasValidas,
+      product_categories: formData.categorias,
       event_date: `${dia}/${mes}/${ano}`,
       event_type: formData.tipoEvento,
       begins_at: formData.horarioInicio,
@@ -130,8 +157,8 @@ export default function CadastroEvento() {
               <option value="">Selecione</option>
               <option value="Bazar">Bazar</option>
               <option value="Feira">Feira</option>
-              <option value="Troca">Troca</option>
-              <option value="Venda de Garagem">Venda de Garagem</option>
+              <option value="Evento de trocas">Troca</option>
+              <option value="Venda de garagem">Venda de Garagem</option>
             </select>
           </label>
 
@@ -143,18 +170,20 @@ export default function CadastroEvento() {
           <fieldset>
             <legend>Categorias</legend>
             <div className={styles.tagsGrid}>
-              {['roupas', 'livros', 'eletronicos', 'moveis', 'brinquedos', 'artesanato', 'outros'].map((cat) => (
-                <label key={cat}>
+              {categoriasOpcoes.map((categoria) => (
+                <label key={categoria.id} className={styles.categoriaCheckbox}>
                   <input
                     type="checkbox"
-                    value={cat}
-                    checked={formData.categorias.includes(cat)}
+                    value={categoria.id}
+                    checked={formData.categorias.includes(categoria.id)}
                     onChange={handleCategoriaChange}
-                  /> {cat}
+                  />{" "}
+                  {categoria.name}
                 </label>
               ))}
             </div>
           </fieldset>
+          
 
           <div className={styles.formActions}>
             <button
@@ -170,14 +199,22 @@ export default function CadastroEvento() {
       </main>
 
       {modalAberto && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalContent}>
+        <div className={styles.modalOverlay}
+        onClick={() => setModalAberto(false)}>
+          
+          <div className={styles.modalContent}
+           onClick={(e) => e.stopPropagation()}>
             <h2>Escolher Espaço</h2>
             {espacosDisponiveis.map((esp) => (
+            <div className={styles.spaceDetailsCard}>  
               <div key={esp.id}>
-                <p>{esp.nome} — {esp.endereco} — R$ {esp.preco},00</p>
+                <div><strong>Título: </strong>{esp.nome}</div>
+                <div><strong>Endereço: </strong> {esp.endereco}</div>
+                <div><strong>Preço: </strong> R$ {esp.preco},00</div>
+                <div><strong>Descrição: </strong> {esp.descricao}</div>
                 <button onClick={() => selecionarEspaco(esp.id)}>Selecionar</button>
               </div>
+            </div> 
             ))}
             <button onClick={() => setModalAberto(false)}>Fechar</button>
           </div>

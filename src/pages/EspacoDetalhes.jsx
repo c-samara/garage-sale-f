@@ -4,25 +4,24 @@ import Header from '../component/Header';
 import Footer from '../component/Footer';
 import styles from './EventoDetalhes.module.css';
 
-export default function EventoDetalhes() {
+export default function EspacoDetalhes() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [evento, setEvento] = useState(null);
+  const [espaco, setEspaco] = useState(null);
+  const [tags, setTags] = useState(null);
   const [editando, setEditando] = useState(false);
   const [novoNome, setNovoNome] = useState('');
   const [novaDescricao, setNovaDescricao] = useState('');
-  const [categoriasOpcoes, setCategoriasOpcoes] = useState([]);
-  const [espacoEvento, setEspacoEvento] = useState([]); 
   
   useEffect(() => {
-    async function buscarEvento() {
+    async function buscarEspaco() {
       try {
-        const res = await fetch(`https://apex.oracle.com/pls/apex/garage_sale/api/events/${id}`);
+        const res = await fetch(`https://apex.oracle.com/pls/apex/garage_sale/api/spaces/${id}`);
         if (!res.ok) throw new Error('Erro ao buscar evento');
         const dados = await res.json();
         const item = dados.items[0];
-        setEvento(item);
-        setNovoNome(item.name);
+        setEspaco(item);
+        setNovoNome(item.title);
         setNovaDescricao(item.description);
       } catch (error) {
         console.error(error);
@@ -30,8 +29,8 @@ export default function EventoDetalhes() {
       }
     }
 
-      const buscarCategorias = async() => {
-       const response = await fetch("https://apex.oracle.com/pls/apex/garage_sale/api/product-categories/", {
+    const buscarTags = async() => {
+       const response = await fetch("https://apex.oracle.com/pls/apex/garage_sale/api/tags/", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -39,54 +38,33 @@ export default function EventoDetalhes() {
       });
       
       const data = await response.json();
-      setCategoriasOpcoes(data.items);
+      setTags(data.items);
     }
 
-    buscarEvento();
-    buscarCategorias();
+    buscarEspaco();
+    buscarTags();
   }, [id]);
 
-  useEffect(() => {
-  if (!evento?.space_id) return;
-
-  async function buscarEspaco() {
-    try {
-      const res = await fetch(`https://apex.oracle.com/pls/apex/garage_sale/api/spaces/${evento.space_id}`);
-      if (!res.ok) throw new Error('Erro ao buscar espaço');
-      const data = await res.json();
-      setEspacoEvento(data.items[0]);
-    } catch (err) {
-      console.error(err);
-      alert('Erro ao carregar espaço do evento.');
-    }
-  }
-
-  buscarEspaco();
-}, [evento]);
 
   async function handleUpdate() {
 
-    const categoriesIds = evento.product_category.split(',').map(nome => {
-      const category = categoriasOpcoes.find((cat) => cat.name.toLowerCase() === nome.trim().toLowerCase());
+    const tagsId = espaco.tags.split(',').map(tag => {
+      const category = tags.find((cat) => cat.name.toLowerCase() === tag.trim().toLowerCase());
       return category?.id;
     });
-    
+        
     try {
       const payload = {
-        owner_id: evento.owner_id,
-        space_id: evento.space_id,
-        name: novoNome,
+        host_id: espaco.host_id,
+        title: novoNome,
         description: novaDescricao,
-        product_categories: categoriesIds,
-        event_date: evento.event_date,
-        event_type: evento.event_type,
-        begins_at: evento.begins_at,
-        finishes_at: evento.finishes_at
+        address: espaco.address,
+        price: espaco.price,
+        capacity: espaco.capacity,
+        tags: tagsId,
       };
-      console.log(espacoEvento)
 
-
-      const res = await fetch(`https://apex.oracle.com/pls/apex/garage_sale/api/events/${id}`, {
+      const res = await fetch(`https://apex.oracle.com/pls/apex/garage_sale/api/spaces/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -95,33 +73,33 @@ export default function EventoDetalhes() {
       });
 
       if (!res.ok) throw new Error(`Erro ${res.status}`);
-      alert('Evento atualizado com sucesso.');
+      alert('Espaço atualizado com sucesso.');
+      setEspaco((prev) => ({ ...prev, title: novoNome, description: novaDescricao }));
       setEditando(false);
-      setEvento((prev) => ({ ...prev, name: novoNome, description: novaDescricao }));
     } catch (err) {
-      console.error(err);
-      alert('Erro ao atualizar o evento.');
+      console.log(err);
+      alert('Erro ao atualizar o espaço.');
     }
   }
 
   async function handleDelete() {
-    const confirmacao = window.confirm('Tem certeza que deseja deletar este evento?');
+    const confirmacao = window.confirm('Tem certeza que deseja deletar este espaço?');
     if (!confirmacao) return;
 
     try {
-      const res = await fetch(`https://apex.oracle.com/pls/apex/garage_sale/api/events/${id}`, {
+      const res = await fetch(`https://apex.oracle.com/pls/apex/garage_sale/api/spaces/${id}`, {
         method: 'DELETE'
       });
       if (!res.ok) throw new Error(`Erro ${res.status}`);
-      alert('Evento deletado com sucesso.');
-      navigate('/meus-eventos');
+      alert('Espaco deletado com sucesso.');
+      navigate('/meus-espacos');
     } catch (err) {
       console.error(err);
-      alert('Erro ao deletar o evento.');
+      alert('Erro ao deletar o espaco.');
     }
   }
 
-  if (!evento) return <p>Carregando...</p>;
+  if (!espaco) return <p>Carregando...</p>;
 
   return (
     <div className={styles.container}>
@@ -129,22 +107,24 @@ export default function EventoDetalhes() {
 
       <main className={styles.main}>
         <div className={styles.detailsCard}>
-          <h1>{evento.name}</h1>
-          <p><strong>Data:</strong> {evento.event_date}</p>
-          <p><strong>Horário:</strong> {evento.begins_at} - {evento.finishes_at}</p>
-          <p><strong>Tipo:</strong> {evento.event_type}</p>
-          <p><strong>Categoria:</strong> {evento.product_category}</p>
-          <p><strong>Descrição:</strong> {evento.description}</p>
-          <p><strong>Espaço:</strong></p>
+          <h1>{espaco.title}</h1>
+          <p><strong>Descrição:</strong> {espaco.description}</p>
+          <p><strong>Endereço:</strong> {espaco.address}</p>
+          <p><strong>Capacidade: </strong> {espaco.capacity}</p>
+          <p><strong>Preço: </strong>R$ {espaco.price}/dia</p>
+          <p><strong>Tags: </strong> {espaco.tags}</p>
+          <p><strong>Informações do dono:</strong></p>
           <div className={styles.spaceDetailsCard}>
-            <h3>
-                Título: {espacoEvento.title}
-            </h3>
             <div>
-                Descrição: {espacoEvento.description}
+                <strong>Nome:</strong> {espaco.host_name} {espaco.host_last_name}
+            </div>
+            <div>
+                <strong>Telefone:</strong> {espaco.host_phone_number}
+            </div>
+            <div>
+              <strong>E-mail:</strong> {espaco.host_email}
             </div>
           </div>
-
           <div className={styles.buttonGroup}>
             <button className={styles.editButton} onClick={() => setEditando(true)}>Editar</button>
             <button className={styles.deleteButton} onClick={handleDelete}>Deletar</button>
@@ -153,7 +133,7 @@ export default function EventoDetalhes() {
           {editando && (
             <div className={styles.modalOverlay}>
               <div className={styles.modalContent}>
-                <h2>Editar Evento</h2>
+                <h2>Editar espaço</h2>
                 <label>
                   Nome:
                   <input

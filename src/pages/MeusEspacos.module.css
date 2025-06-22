@@ -58,11 +58,13 @@
 
 .espacoCard {
   background-color: #ffffff;
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  padding: var(--card-padding);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
+  text-decoration: none;
+  color: inherit;
 }
 
 .espacoCard:hover {

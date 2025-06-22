@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../component/Header';
 import Footer from '../component/Footer';
 import styles from './MeusEspacos.module.css';
+import { Link } from 'react-router-dom';
 
 export default function MeusEspacos() {
   const [espacos, setEspacos] = useState([]);
@@ -53,14 +54,18 @@ export default function MeusEspacos() {
 
         <div className={styles.espacosGrid}>
           {espacos.map((esp) => (
-            <div key={esp.id} className={styles.espacoCard}>
+             <Link
+                key={esp.id}
+                to={`/espaco/${esp.id}`}
+                className={styles.espacoCard}
+              >
               <h2>{esp.nome}</h2>
               <p><strong>Endereço:</strong> {esp.endereco}</p>
               <p><strong>Capacidade:</strong> {esp.capacidade} pessoas</p>
               <p><strong>Preço:</strong> R$ {esp.preco}/dia</p>
               <p><strong>Tags:</strong> {esp.tags.join(', ')}</p>
               <p className={styles.espacoDescricao}><strong>Descrição:</strong> {esp.descricao}</p>
-            </div>
+            </Link>
           ))}
         </div>
       </main>
