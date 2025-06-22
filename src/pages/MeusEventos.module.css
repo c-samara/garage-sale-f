@@ -1,14 +1,39 @@
+:root {
+  --main-max-width: 1200px;
+  --main-padding: 2rem;
+  --main-margin-top: 2rem;
+  --background-main: #f8f9fa;
+  --card-gap: 24px;
+  --card-padding: 20px;
+  --card-radius: 16px;
+  --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  --card-shadow-hover: 0 12px 30px rgba(0, 0, 0, 0.18);
+  --green: #4caf50;
+  --green-hover: #43a047;
+  --text-gray: #444;
+  --text-muted: #777;
+}
+
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background-main);
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--main-max-width);
+  margin: var(--main-margin-top) auto 0 auto;
+  padding: var(--main-padding);
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 2rem;
 }
 
 .selectOrdenacao {
@@ -19,7 +44,7 @@
 }
 
 .novoEventoButton {
-  background-color: #4caf50;
+  background-color: var(--green);
   color: #fff;
   padding: 8px 16px;
   border-radius: 8px;
@@ -31,21 +56,21 @@
 }
 
 .novoEventoButton:hover {
-  background-color: #43a047;
+  background-color: var(--green-hover);
 }
 
 .cardsContainer {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+  gap: var(--card-gap);
   margin-top: 1rem;
 }
 
 .card {
   background-color: #ffffff;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  padding: var(--card-padding);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
   text-decoration: none;
@@ -54,7 +79,7 @@
 
 .card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--card-shadow-hover);
 }
 
 .card h2 {
@@ -65,5 +90,14 @@
 
 .card p {
   margin: 6px 0;
-  color: #444;
+  color: var(--text-gray);
+}
+
+/* ✅ Centraliza footer */
+footer {
+  text-align: center;
+  padding: 2rem 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  background-color: transparent;
 }
