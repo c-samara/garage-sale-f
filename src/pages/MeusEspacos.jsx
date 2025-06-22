@@ -52,7 +52,7 @@ export default function MeusEspacos() {
             className={styles.saveButton}
             onClick={() => navigate('/meus-espacos/novo')}
           >
-            + Cadastrar Novo Espaço
+            + Novo Espaço
           </button>
         </div>
 
