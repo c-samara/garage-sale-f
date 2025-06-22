@@ -10,11 +10,13 @@ export default function MeusEspacos() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // 👉 Carrega espaços já cadastrados
+  /* ---------- CARREGA ESPAÇOS ---------- */
   useEffect(() => {
     async function fetchEspacos() {
       try {
-        const res = await fetch('https://apex.oracle.com/pls/apex/garage_sale/api/spaces/');
+        const res = await fetch(
+          'https://apex.oracle.com/pls/apex/garage_sale/api/spaces/'
+        );
         if (!res.ok) throw new Error('Erro ao carregar espaços');
         const data = await res.json();
 
@@ -22,12 +24,11 @@ export default function MeusEspacos() {
           data.items.map((it) => ({
             id: it.id,
             nome: it.title,
-            descricao: it.description,
             endereco: it.address,
             capacidade: it.capacity,
             preco: it.price,
+            descricao: it.description,
             tags: Array.isArray(it.tags) ? it.tags : [],
-            imagens: ['/img/espaco-default.jpg'],
           }))
         );
       } catch (err) {
@@ -47,14 +48,12 @@ export default function MeusEspacos() {
       <main className={styles.main}>
         <div className={styles.pageHeader}>
           <h1>Meus Espaços</h1>
-          <div>
-            <button
-              className={styles.saveButton}
-              onClick={() => navigate('/meus-espacos/novo')}
-            >
-              + Cadastrar Novo Espaço
-            </button>
-          </div>
+          <button
+            className={styles.saveButton}
+            onClick={() => navigate('/meus-espacos/novo')}
+          >
+            + Cadastrar Novo Espaço
+          </button>
         </div>
 
         {loading && <p>Carregando espaços…</p>}
@@ -64,17 +63,30 @@ export default function MeusEspacos() {
           <div className={styles.espacosGrid}>
             {espacos.map((esp) => (
               <div key={esp.id} className={styles.espacoCard}>
-                <img src={esp.imagens[0]} alt={esp.nome} className={styles.espacoImage} />
-                <div className={styles.espacoContent}>
-                  <h2>{esp.nome}</h2>
-                  <p className={styles.espacoEndereco}>{esp.endereco}</p>
-                  <div className={styles.espacoDetails}>
-                    <span>Capacidade: {esp.capacidade}</span>
-                    <span>R$ {esp.preco}/dia</span>
-                  </div>
-                  <p className={styles.espacoDescricao}>{esp.descricao}</p>
-                  <p><strong>Tags:</strong> {esp.tags.join(', ')}</p>
-                </div>
+                {/* Cabeçalho do cartão */}
+                <h2>{esp.nome}</h2>
+
+                {/* Informações detalhadas */}
+                <p>
+                  <strong>Endereço:</strong> {esp.endereco || '—'}
+                </p>
+                <p>
+                  <strong>Capacidade:</strong>{' '}
+                  {esp.capacidade ? `${esp.capacidade} pessoas` : '—'}
+                </p>
+                <p>
+                  <strong>Preço:</strong>{' '}
+                  {esp.preco ? `R$ ${esp.preco}/dia` : '—'}
+                </p>
+                <p>
+                  <strong>Tags:</strong>{' '}
+                  {esp.tags.length ? esp.tags.join(', ') : '—'}
+                </p>
+                {esp.descricao && (
+                  <p>
+                    <strong>Descrição:</strong> {esp.descricao}
+                  </p>
+                )}
               </div>
             ))}
           </div>
