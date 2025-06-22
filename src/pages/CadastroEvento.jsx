@@ -126,20 +126,32 @@ export default function CadastroEvento() {
 
           <label>Descrição<textarea name="descricao" value={formData.descricao} onChange={handleChange} required /></label>
 
-          <fieldset><legend>Categorias</legend>
-            {['roupas','livros','eletronicos','moveis','brinquedos','artesanato','outros'].map((cat) => (
-              <label key={cat}>
-                <input
-                  type="checkbox"
-                  value={cat}
-                  checked={formData.categorias.includes(cat)}
-                  onChange={handleCategoriaChange}
-                /> {cat}
-              </label>
-            ))}
+          <fieldset>
+            <legend>Categorias</legend>
+            <div className={styles.tagsGrid}>
+              {['roupas','livros','eletronicos','moveis','brinquedos','artesanato','outros'].map((cat) => (
+                <label key={cat}>
+                  <input
+                    type="checkbox"
+                    value={cat}
+                    checked={formData.categorias.includes(cat)}
+                    onChange={handleCategoriaChange}
+                  /> {cat}
+                </label>
+              ))}
+            </div>
           </fieldset>
 
-          <button type="submit" className={styles.saveButton}>Cadastrar Evento</button>
+          <div className={styles.formActions}>
+            <button
+              type="button"
+              className={styles.cancelButton}
+              onClick={() => navigate('/meus-eventos')}
+            >
+              Cancelar
+            </button>
+            <button type="submit" className={styles.saveButton}>Cadastrar Evento</button>
+          </div>
         </form>
       </main>
 
