@@ -163,6 +163,7 @@ export default function EventoDetalhes() {
           <div className={styles.buttonGroup}>
             <button className={styles.editButton} onClick={() => setEditando(true)}>Editar</button>
             <button className={styles.deleteButton} onClick={handleDelete}>Deletar</button>
+            <button className={styles.returnButton} onClick={() => navigate('/meus-eventos')}>Voltar</button>
           </div>
 
           {editando && (

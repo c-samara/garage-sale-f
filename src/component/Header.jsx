@@ -37,7 +37,7 @@ export default function Header() {
           <div className={styles.userText}>
             <span className={styles.userGreeting}>Bem-vinda, Samara!</span>
             <p className={styles.userPlan}>
-              <BsFillSuitDiamondFill size={10} color="green" /> Plano Básico
+              <BsFillSuitDiamondFill size={10} color="green" /> Plano Básico 
             </p>
           </div>
         </div>

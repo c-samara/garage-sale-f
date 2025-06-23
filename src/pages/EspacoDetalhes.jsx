@@ -136,6 +136,7 @@ export default function EspacoDetalhes() {
           <div className={styles.buttonGroup}>
             <button className={styles.editButton} onClick={() => setEditando(true)}>Editar</button>
             <button className={styles.deleteButton} onClick={handleDelete}>Deletar</button>
+            <button className={styles.returnButton} onClick={() => navigate('/meus-espacos')}>Voltar</button>
           </div>
 
           {editando && (
