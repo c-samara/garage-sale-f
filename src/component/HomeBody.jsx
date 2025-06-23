@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './HomeBody.module.css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
@@ -60,6 +61,7 @@ function Carrossel() {
 export default function HomeBody() {
   const [eventos, setEventos] = useState([]);
   const [showHelpPrompt, setShowHelpPrompt] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchEventos() {
@@ -102,7 +104,12 @@ export default function HomeBody() {
         <h2>🕵️ Destaques na sua região</h2>
         <div className={styles.eventGrid}>
           {eventos.map((evento, index) => (
-            <div key={evento.id} className={styles.eventCard}>
+            <div 
+              key={evento.id} 
+              className={styles.eventCard} 
+              onClick={() => navigate(`/evento/${evento.id}`)} 
+              style={{ cursor: 'pointer' }} 
+            >
               {index === 0 && (
                 <div className={styles.oportunidadeBadge}>Boa oportunidade</div>
               )}
