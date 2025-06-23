@@ -81,3 +81,23 @@ body {
   object-fit: cover;
   border: 1.5px solid rgba(0, 0, 0, 0.1);
 }
+.userText {
+  display: flex;
+  flex-direction: column;
+  margin-left: 8px; /* opcional: separa o texto da imagem */
+}
+
+.userGreeting {
+  font-weight: bold;
+}
+
+.userPlan {
+  font-size: 0.9rem;
+  color: #888; 
+  margin: 0; 
+}
+
+.activeLink {
+  font-weight: bold;
+}
+

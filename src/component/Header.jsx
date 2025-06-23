@@ -1,7 +1,8 @@
 import React from "react";
 import styles from "./Header.module.css";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import logo from '/img/logo.png';
+import { BsFillSuitDiamondFill } from "react-icons/bs";
 
 export default function Header() {
   return (
@@ -9,14 +10,36 @@ export default function Header() {
       <img className={styles.imgLogo} src={logo} alt="Logo" />
 
       <nav className={styles.nav}>
-        <Link to="/">Início</Link>
-        <Link to="/meus-eventos">Eventos</Link>
-        <Link to="/meus-espacos">Espaços</Link>
+        <NavLink
+          to="/"
+          className={({ isActive }) => isActive ? styles.activeLink : undefined}
+        >
+          Início
+        </NavLink>
+
+        <NavLink
+          to="/meus-eventos"
+          className={({ isActive }) => isActive ? styles.activeLink : undefined}
+        >
+          Eventos
+        </NavLink>
+
+        <NavLink
+          to="/meus-espacos"
+          className={({ isActive }) => isActive ? styles.activeLink : undefined}
+        >
+          Espaços
+        </NavLink>
 
         {/* Bloco com destaque, foto antes do nome */}
         <div className={styles.userInfo}>
           <img className={styles.userPhoto} src="/img/samara.jpeg" alt="Samara" />
-          <span className={styles.userGreeting}>Bem-vinda, Samara!</span>
+          <div className={styles.userText}>
+            <span className={styles.userGreeting}>Bem-vinda, Samara!</span>
+            <p className={styles.userPlan}>
+              <BsFillSuitDiamondFill size={10} color="green" /> Plano Básico
+            </p>
+          </div>
         </div>
       </nav>
     </header>

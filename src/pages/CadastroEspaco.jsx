@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../component/Header';
 import Footer from '../component/Footer';
+import { FaCheckCircle } from "react-icons/fa";
 import styles from './CadastroEspaco.module.css';
 
 export default function CadastroEspaco() {
@@ -21,6 +22,8 @@ export default function CadastroEspaco() {
   const [currentEspaco, setCurrentEspaco] = useState(blankEspaco);
   const [tagOptions, setTagOptions] = useState([]);
   const [imagemArquivo, setImagemArquivo] = useState(null);
+  const [mostrarAlertaSucesso, setMostrarAlertaSucesso] = useState(false);
+  const [mensagemAlerta, setMensagemAlerta] = useState('');
 
   useEffect(() => {
     async function fetchTags() {
@@ -116,8 +119,12 @@ export default function CadastroEspaco() {
       });
 
       if (!res.ok) throw new Error(await res.text());
-      alert('Espaço cadastrado com sucesso!');
-      navigate('/meus-espacos');
+      setMensagemAlerta('Espaço cadastrado com sucesso!');
+      setMostrarAlertaSucesso(true);
+      setTimeout(() => {
+        setMostrarAlertaSucesso(false);
+        navigate('/meus-espacos');
+      }, 2000);
     } catch (err) {
       alert(`Erro ao cadastrar: ${err.message}`);
     }
@@ -185,6 +192,15 @@ export default function CadastroEspaco() {
           </form>
         </div>
       </main>
+      {mostrarAlertaSucesso && (
+        <div className={styles.alertOverlay}>
+          <div className={styles.alertBox}>
+            <FaCheckCircle size={120} color='green'/>
+            <h2>Sucesso!</h2>
+            <p>{mensagemAlerta}</p>
+          </div>
+        </div>
+      )}
       <Footer />
     </div>
   );

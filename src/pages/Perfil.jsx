@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Header from '../component/Header';
 import Footer from '../component/Footer';
+import { FaCheckCircle } from "react-icons/fa";
 import styles from './Perfil.module.css';
 
 export default function Perfil() {
@@ -16,6 +17,8 @@ export default function Perfil() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({...userData});
+  const [mostrarAlertaSucesso, setMostrarAlertaSucesso] = useState(false);
+  const [mensagemAlerta, setMensagemAlerta] = useState('');
 
   // Dados de atividades do usuário - normalmente viriam de uma API
   const atividades = [
@@ -35,7 +38,11 @@ export default function Perfil() {
     e.preventDefault();
     setUserData({...formData});
     setIsEditing(false);
-    alert('Perfil atualizado com sucesso!');
+    setMensagemAlerta('Perfil atualizado com sucesso!');
+    setMostrarAlertaSucesso(true);
+    setTimeout(() => {
+      setMostrarAlertaSucesso(false);
+    }, 2000);
   };
 
   return (
@@ -179,6 +186,15 @@ export default function Perfil() {
         </div>
       </main>
       
+      {mostrarAlertaSucesso && (
+        <div className={styles.alertOverlay}>
+          <div className={styles.alertBox}>
+            <FaCheckCircle size={120} color='green'/>
+            <h2>Sucesso!</h2>
+            <p>{mensagemAlerta}</p>
+          </div>
+        </div>
+      )}
       <Footer />
     </div>
   );

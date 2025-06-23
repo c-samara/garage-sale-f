@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';      // ⬅️ novo
+import { Link } from 'react-router-dom';      // ⇤️ novo
 import Header from '../component/Header';
 import Footer from '../component/Footer';
+import { FaBan } from 'react-icons/fa';
 import styles from './MeusEventos.module.css';
 
 export default function MeusEventos() {
   const [eventos, setEventos] = useState([]);
   const [ordenacao, setOrdenacao] = useState('cadastro');
+  const [mostrarAlertaLimite, setMostrarAlertaLimite] = useState(false);
+  
+  const LIMITE_EVENTOS = 5; // Constante para o limite de eventos por usuário
 
   /* ---------- CARREGAR EVENTOS ---------- */
   useEffect(() => {
@@ -57,7 +61,13 @@ export default function MeusEventos() {
 
             <button
               className={styles.novoEventoButton}
-              onClick={() => (window.location.href = '/cadastro-evento')}
+              onClick={() => {
+                if (eventos.length >= LIMITE_EVENTOS) {
+                  setMostrarAlertaLimite(true);
+                } else {
+                  window.location.href = '/cadastro-evento';
+                }
+              }}
             >
               + Novo Evento
             </button>
@@ -82,6 +92,20 @@ export default function MeusEventos() {
         </div>
       </main>
 
+      {/* Alerta de limite de eventos atingido */}
+      {mostrarAlertaLimite && (
+        <div className={styles.alertOverlay}>
+          <div className={styles.alertBox}>
+            <FaBan size={120} color='red'/>
+            <h2>Limite de Eventos Atingido</h2>
+            <p>Você já possui {eventos.length} eventos cadastrados. O limite é de {LIMITE_EVENTOS} eventos por usuário.</p>
+            <p>Para cadastrar um novo evento, exclua algum dos eventos existentes.</p>
+            <div className={styles.alertButtons}>
+              <button onClick={() => setMostrarAlertaLimite(false)}>Entendi</button>
+            </div>
+          </div>
+        </div>
+      )}
       <Footer />
     </div>
   );

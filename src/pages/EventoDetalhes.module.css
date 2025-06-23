@@ -232,3 +232,62 @@
   gap: 1rem;
   margin-top: 1.5rem;
 }
+.alertOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.alertBox {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.alertBox h2 {
+  margin-bottom: 0.5rem;
+  color: #c0392b;
+}
+
+.alertBox p {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.alertButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.alertBox button {
+  background-color: #c0392b;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.alertBox button:hover {
+  background-color: #a93226;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

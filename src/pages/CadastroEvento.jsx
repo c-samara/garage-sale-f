@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../component/Header';
 import Footer from '../component/Footer';
 import styles from './CadastroEvento.module.css';
+import { FaCheckCircle } from "react-icons/fa";
 
 export default function CadastroEvento() {
   const navigate = useNavigate();
@@ -17,13 +18,15 @@ export default function CadastroEvento() {
     descricao: '',
     espacoId: ''
   });
+
   const [espacosDisponiveis, setEspacosDisponiveis] = useState([]);
   const [modalAberto, setModalAberto] = useState(false);
   const [categoriasOpcoes, setCategoriasOpcoes] = useState([]);
+  const [erros, setErros] = useState({});
+  const [mostrarAlertaSucesso, setMostrarAlertaSucesso] = useState(false);
 
   useEffect(() => {
-
-    const buscarEspacos = async() => {
+    const buscarEspacos = async () => {
       try {
         const res = await fetch('https://apex.oracle.com/pls/apex/garage_sale/api/spaces/');
         if (!res.ok) throw new Error(`Erro ${res.status}`);
@@ -41,20 +44,18 @@ export default function CadastroEvento() {
         console.error(err);
         alert('Erro ao carregar espaços.');
       }
-    }
+    };
 
-
-    const buscarCategorias = async() => {
-       const response = await fetch("https://apex.oracle.com/pls/apex/garage_sale/api/product-categories/", {
+    const buscarCategorias = async () => {
+      const response = await fetch("https://apex.oracle.com/pls/apex/garage_sale/api/product-categories/", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         }
       });
-      
       const data = await response.json();
       setCategoriasOpcoes(data.items);
-    }
+    };
 
     buscarCategorias();
     buscarEspacos();
@@ -63,8 +64,8 @@ export default function CadastroEvento() {
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-   const handleCategoriaChange = (e) => {
-    const id = Number(e.target.value); 
+  const handleCategoriaChange = (e) => {
+    const id = Number(e.target.value);
     setFormData((prev) => {
       const selected = prev.categorias.includes(id);
       const newCategories = selected
@@ -78,7 +79,6 @@ export default function CadastroEvento() {
     });
   };
 
-
   const selecionarEspaco = (id) => {
     setFormData((p) => ({ ...p, espacoId: id.toString() }));
     setModalAberto(false);
@@ -86,21 +86,44 @@ export default function CadastroEvento() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const novosErros = {};
 
-    console.log(espacosDisponiveis)
+    if (!formData.nome) novosErros.nome = 'Nome é obrigatório.';
+    if (!formData.data) novosErros.data = 'Data é obrigatória.';
+    if (!formData.horarioInicio) novosErros.horarioInicio = 'Horário de início é obrigatório.';
+    if (!formData.horarioFim) novosErros.horarioFim = 'Horário de fim é obrigatório.';
+    if (!formData.tipoEvento) novosErros.tipoEvento = 'Tipo de evento é obrigatório.';
+    if (!formData.descricao) novosErros.descricao = 'Descrição é obrigatória.';
 
-    // validações básicas
-    if (!formData.nome || !formData.data || !formData.horarioInicio || !formData.horarioFim || !formData.tipoEvento || !formData.descricao) {
-      return alert('Preencha todos os campos obrigatórios.');
+    const hoje = new Date();
+    const dataEvento = new Date(formData.data + 'T00:00:00');
+
+    if (formData.data && dataEvento < new Date(hoje.toDateString())) {
+      novosErros.data = 'A data do evento não pode ser anterior à data atual.';
+    }
+
+    if (formData.horarioInicio && formData.horarioFim) {
+      const inicio = new Date(`${formData.data}T${formData.horarioInicio}`);
+      const fim = new Date(`${formData.data}T${formData.horarioFim}`);
+      if (fim <= inicio) {
+        novosErros.horarioFim = 'O horário de término deve ser maior que o de início.';
+      }
     }
 
     if (!formData.espacoId || !espacosDisponiveis.some((esp) => esp.id === parseInt(formData.espacoId))) {
-      return alert('Selecione um espaço válido antes de cadastrar.');
+      novosErros.espacoId = 'Selecione um espaço válido.';
     }
 
     if (!formData.categorias.length) {
-      return alert('Selecione ao menos uma categoria válida.');
+      novosErros.categorias = 'Selecione ao menos uma categoria.';
     }
+
+    if (Object.keys(novosErros).length > 0) {
+      setErros(novosErros);
+      return;
+    }
+
+    setErros({}); // limpa os erros
 
     const [ano, mes, dia] = formData.data.split('-');
     const payload = {
@@ -115,8 +138,6 @@ export default function CadastroEvento() {
       finishes_at: formData.horarioFim
     };
 
-    console.log('Payload enviado:', JSON.stringify(payload, null, 2));
-
     try {
       const res = await fetch('https://apex.oracle.com/pls/apex/garage_sale/api/events/', {
         method: 'POST',
@@ -126,15 +147,16 @@ export default function CadastroEvento() {
 
       if (!res.ok) {
         const erroTexto = await res.text();
-        console.error('Erro:', erroTexto);
-        return alert('Erro ao cadastrar evento.\n' + erroTexto);
+        return setErros({ geral: 'Erro ao cadastrar evento: ' + erroTexto });
       }
+      setMostrarAlertaSucesso(true);
+      setTimeout(() => {
+        navigate('/meus-eventos');
+      }, 3000); // redireciona após 3 segundos
 
-      alert('Evento cadastrado com sucesso!');
-      navigate('/meus-eventos');
     } catch (err) {
       console.error(err);
-      alert('Falha de conexão.');
+      setErros({ geral: 'Falha de conexão com o servidor.' });
     }
   };
 
@@ -147,13 +169,33 @@ export default function CadastroEvento() {
         <h1>Cadastrar Novo Evento</h1>
 
         <form onSubmit={handleSubmit} className={styles.form}>
-          <label>Nome<input name="nome" value={formData.nome} onChange={handleChange} required /></label>
-          <label>Data<input type="date" name="data" value={formData.data} onChange={handleChange} required /></label>
-          <label>Início<input type="time" name="horarioInicio" value={formData.horarioInicio} onChange={handleChange} required /></label>
-          <label>Fim<input type="time" name="horarioFim" value={formData.horarioFim} onChange={handleChange} required /></label>
+          <label>
+            Nome
+            <input name="nome" value={formData.nome} onChange={handleChange} />
+          </label>
+          {erros.nome && <p className={styles.erro}>{erros.nome}</p>}
 
-          <label>Tipo
-            <select name="tipoEvento" value={formData.tipoEvento} onChange={handleChange} required>
+          <label>
+            Data
+            <input type="date" name="data" value={formData.data} onChange={handleChange} />
+          </label>
+          {erros.data && <p className={styles.erro}>{erros.data}</p>}
+
+          <label>
+            Início
+            <input type="time" name="horarioInicio" value={formData.horarioInicio} onChange={handleChange} />
+          </label>
+          {erros.horarioInicio && <p className={styles.erro}>{erros.horarioInicio}</p>}
+
+          <label>
+            Fim
+            <input type="time" name="horarioFim" value={formData.horarioFim} onChange={handleChange} />
+          </label>
+          {erros.horarioFim && <p className={styles.erro}>{erros.horarioFim}</p>}
+
+          <label>
+            Tipo
+            <select name="tipoEvento" value={formData.tipoEvento} onChange={handleChange}>
               <option value="">Selecione</option>
               <option value="Bazar">Bazar</option>
               <option value="Feira">Feira</option>
@@ -161,11 +203,16 @@ export default function CadastroEvento() {
               <option value="Venda de garagem">Venda de Garagem</option>
             </select>
           </label>
+          {erros.tipoEvento && <p className={styles.erro}>{erros.tipoEvento}</p>}
 
           <button type="button" onClick={() => setModalAberto(true)}>Selecionar Espaço</button>
-          {espacoSelecionado && <p>Espaço: <strong>{espacoSelecionado.nome}</strong></p>}
+          {erros.espacoId && <p className={styles.erro}>{erros.espacoId}</p>}
 
-          <label>Descrição<textarea name="descricao" value={formData.descricao} onChange={handleChange} required /></label>
+          <label>
+            Descrição
+            <textarea name="descricao" value={formData.descricao} onChange={handleChange} />
+          </label>
+          {erros.descricao && <p className={styles.erro}>{erros.descricao}</p>}
 
           <fieldset>
             <legend>Categorias</legend>
@@ -183,7 +230,9 @@ export default function CadastroEvento() {
               ))}
             </div>
           </fieldset>
-          
+          {erros.categorias && <p className={styles.erro}>{erros.categorias}</p>}
+
+          {erros.geral && <p className={styles.erro}>{erros.geral}</p>}
 
           <div className={styles.formActions}>
             <button
@@ -199,24 +248,30 @@ export default function CadastroEvento() {
       </main>
 
       {modalAberto && (
-        <div className={styles.modalOverlay}
-        onClick={() => setModalAberto(false)}>
-          
-          <div className={styles.modalContent}
-           onClick={(e) => e.stopPropagation()}>
+        <div className={styles.modalOverlay} onClick={() => setModalAberto(false)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <h2>Escolher Espaço</h2>
             {espacosDisponiveis.map((esp) => (
-            <div className={styles.spaceDetailsCard}>  
-              <div key={esp.id}>
-                <div><strong>Título: </strong>{esp.nome}</div>
-                <div><strong>Endereço: </strong> {esp.endereco}</div>
-                <div><strong>Preço: </strong> R$ {esp.preco},00</div>
-                <div><strong>Descrição: </strong> {esp.descricao}</div>
-                <button onClick={() => selecionarEspaco(esp.id)}>Selecionar</button>
+              <div key={esp.id} className={styles.spaceDetailsCard}>
+                <div>
+                  <div><strong>Título: </strong>{esp.nome}</div>
+                  <div><strong>Endereço: </strong>{esp.endereco}</div>
+                  <div><strong>Preço: </strong>R$ {esp.preco},00</div>
+                  <div><strong>Descrição: </strong>{esp.descricao}</div>
+                  <button onClick={() => selecionarEspaco(esp.id)}>Selecionar</button>
+                </div>
               </div>
-            </div> 
             ))}
             <button onClick={() => setModalAberto(false)}>Fechar</button>
+          </div>
+        </div>
+      )}
+      {mostrarAlertaSucesso && (
+        <div className={styles.alertOverlay}>
+          <div className={styles.alertBox}>
+            <FaCheckCircle  size={120} color='green'/>
+            <h2>Parabéns!</h2>
+            <p>Evento cadastrado com sucesso !!!</p>
           </div>
         </div>
       )}

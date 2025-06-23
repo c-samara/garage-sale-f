@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../component/Header';
 import Footer from '../component/Footer';
+import { FaCheckCircle } from 'react-icons/fa';
+import { LuBadgeAlert } from "react-icons/lu";
 import styles from './EventoDetalhes.module.css';
 
 export default function EventoDetalhes() {
@@ -12,7 +14,10 @@ export default function EventoDetalhes() {
   const [novoNome, setNovoNome] = useState('');
   const [novaDescricao, setNovaDescricao] = useState('');
   const [categoriasOpcoes, setCategoriasOpcoes] = useState([]);
-  const [espacoEvento, setEspacoEvento] = useState([]); 
+  const [espacoEvento, setEspacoEvento] = useState([]);
+  const [mostrarAlertaSucesso, setMostrarAlertaSucesso] = useState(false);
+  const [mostrarAlertaExclusao, setMostrarAlertaExclusao] = useState(false);
+  const [mensagemAlerta, setMensagemAlerta] = useState(''); 
   
   useEffect(() => {
     async function buscarEvento() {
@@ -95,9 +100,13 @@ export default function EventoDetalhes() {
       });
 
       if (!res.ok) throw new Error(`Erro ${res.status}`);
-      alert('Evento atualizado com sucesso.');
-      setEditando(false);
-      setEvento((prev) => ({ ...prev, name: novoNome, description: novaDescricao }));
+      setMensagemAlerta('Evento atualizado com sucesso!');
+      setMostrarAlertaSucesso(true);
+      setTimeout(() => {
+        setMostrarAlertaSucesso(false);
+        setEditando(false);
+        setEvento((prev) => ({ ...prev, name: novoNome, description: novaDescricao }));
+      }, 2000);
     } catch (err) {
       console.error(err);
       alert('Erro ao atualizar o evento.');
@@ -105,16 +114,22 @@ export default function EventoDetalhes() {
   }
 
   async function handleDelete() {
-    const confirmacao = window.confirm('Tem certeza que deseja deletar este evento?');
-    if (!confirmacao) return;
-
+    setMostrarAlertaExclusao(true);
+  }
+  
+  async function confirmarDelete() {
+    setMostrarAlertaExclusao(false);
     try {
       const res = await fetch(`https://apex.oracle.com/pls/apex/garage_sale/api/events/${id}`, {
         method: 'DELETE'
       });
       if (!res.ok) throw new Error(`Erro ${res.status}`);
-      alert('Evento deletado com sucesso.');
-      navigate('/meus-eventos');
+      setMensagemAlerta('Evento deletado com sucesso!');
+      setMostrarAlertaSucesso(true);
+      setTimeout(() => {
+        setMostrarAlertaSucesso(false);
+        navigate('/meus-eventos');
+      }, 2000);
     } catch (err) {
       console.error(err);
       alert('Erro ao deletar o evento.');
@@ -180,6 +195,31 @@ export default function EventoDetalhes() {
         </div>
       </main>
 
+      {/* Alerta de confirmação de exclusão */}
+      {mostrarAlertaExclusao && (
+        <div className={styles.alertOverlay}>
+          <div className={styles.alertBox}>
+            <LuBadgeAlert size={120} color='red'/>
+            <h2>Confirmar Exclusão</h2>
+            <p>Tem certeza que deseja deletar este evento?</p>
+            <div className={styles.alertButtons}>
+              <button onClick={confirmarDelete}>Sim, deletar</button>
+              <button onClick={() => setMostrarAlertaExclusao(false)}>Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Alerta de sucesso */}
+      {mostrarAlertaSucesso && (
+        <div className={styles.alertOverlay}>
+          <div className={styles.alertBox}>
+            <FaCheckCircle size={120} color='green'/>
+            <h2>Sucesso!</h2>
+            <p>{mensagemAlerta}</p>
+          </div>
+        </div>
+      )}
       <Footer />
     </div>
   );

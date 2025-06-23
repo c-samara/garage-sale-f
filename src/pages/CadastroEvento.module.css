@@ -161,6 +161,13 @@ fieldset label {
   gap: 1rem;
 }
 
+.erro {
+  color: red;
+  font-size: 0.875rem;
+  margin-top: 4px;
+}
+
+
 .spaceDetailsCard {
   background-color: #e8e8e8;
   border-radius: 10px;
@@ -182,3 +189,44 @@ fieldset label {
   gap: 0.4rem;
   font-size: 0.95rem;
 }
+
+.alertOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.alertBox {
+  background: #1bce65;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.alertBox h2 {
+  margin-bottom: 0.5rem;
+  color: #056b2f;
+}
+
+.alertBox p {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  color: #2c3e50;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+

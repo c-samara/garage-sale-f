@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../component/Header';
 import Footer from '../component/Footer';
+import { LuBadgeAlert } from "react-icons/lu";
+import { FaCheckCircle } from "react-icons/fa";
 import styles from './EventoDetalhes.module.css';
 
 export default function EspacoDetalhes() {
@@ -12,7 +14,10 @@ export default function EspacoDetalhes() {
   const [editando, setEditando] = useState(false);
   const [novoNome, setNovoNome] = useState('');
   const [novaDescricao, setNovaDescricao] = useState('');
-  
+  const [mostrarAlertaExclusao, setMostrarAlertaExclusao] = useState(false);
+  const [mostrarAlertaSucessoExclusao, setMostrarAlertaSucessoExclusao] = useState(false);
+  const [mostrarAlertaSucessoAtualizacao, setMostrarAlertaSucessoAtualizacao] = useState(false);
+
   useEffect(() => {
     async function buscarEspaco() {
       try {
@@ -29,30 +34,28 @@ export default function EspacoDetalhes() {
       }
     }
 
-    const buscarTags = async() => {
-       const response = await fetch("https://apex.oracle.com/pls/apex/garage_sale/api/tags/", {
+    const buscarTags = async () => {
+      const response = await fetch("https://apex.oracle.com/pls/apex/garage_sale/api/tags/", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-        }
+        },
       });
-      
+
       const data = await response.json();
       setTags(data.items);
-    }
+    };
 
     buscarEspaco();
     buscarTags();
   }, [id]);
 
-
   async function handleUpdate() {
-
     const tagsId = espaco.tags.split(',').map(tag => {
       const category = tags.find((cat) => cat.name.toLowerCase() === tag.trim().toLowerCase());
       return category?.id;
     });
-        
+
     try {
       const payload = {
         host_id: espaco.host_id,
@@ -67,15 +70,16 @@ export default function EspacoDetalhes() {
       const res = await fetch(`https://apex.oracle.com/pls/apex/garage_sale/api/spaces/${id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) throw new Error(`Erro ${res.status}`);
-      alert('Espaço atualizado com sucesso.');
       setEspaco((prev) => ({ ...prev, title: novoNome, description: novaDescricao }));
       setEditando(false);
+      setMostrarAlertaSucessoAtualizacao(true);
+      setTimeout(() => setMostrarAlertaSucessoAtualizacao(false), 3000);
     } catch (err) {
       console.log(err);
       alert('Erro ao atualizar o espaço.');
@@ -83,19 +87,23 @@ export default function EspacoDetalhes() {
   }
 
   async function handleDelete() {
-    const confirmacao = window.confirm('Tem certeza que deseja deletar este espaço?');
-    if (!confirmacao) return;
+    setMostrarAlertaExclusao(true);
+  }
 
+  async function confirmarDelete() {
+    setMostrarAlertaExclusao(false);
     try {
       const res = await fetch(`https://apex.oracle.com/pls/apex/garage_sale/api/spaces/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       });
       if (!res.ok) throw new Error(`Erro ${res.status}`);
-      alert('Espaco deletado com sucesso.');
-      navigate('/meus-espacos');
+      setMostrarAlertaSucessoExclusao(true);
+      setTimeout(() => {
+        navigate('/meus-espacos');
+      }, 3000);
     } catch (err) {
       console.error(err);
-      alert('Erro ao deletar o espaco.');
+      alert('Erro ao deletar o espaço.');
     }
   }
 
@@ -116,10 +124,10 @@ export default function EspacoDetalhes() {
           <p><strong>Informações do dono:</strong></p>
           <div className={styles.spaceDetailsCard}>
             <div>
-                <strong>Nome:</strong> {espaco.host_name} {espaco.host_last_name}
+              <strong>Nome:</strong> {espaco.host_name} {espaco.host_last_name}
             </div>
             <div>
-                <strong>Telefone:</strong> {espaco.host_phone_number}
+              <strong>Telefone:</strong> {espaco.host_phone_number}
             </div>
             <div>
               <strong>E-mail:</strong> {espaco.host_email}
@@ -159,6 +167,43 @@ export default function EspacoDetalhes() {
           )}
         </div>
       </main>
+
+      {/* Modal de confirmação de exclusão */}
+      {mostrarAlertaExclusao && (
+        <div className={styles.alertOverlay}>
+          <div className={styles.alertBox}>
+            <LuBadgeAlert  size={120} color='red'/>
+            <h2>Confirmar Exclusão</h2>
+            <p>Tem certeza que deseja deletar este espaço?</p>
+            <div className={styles.alertButtons}>
+              <button onClick={confirmarDelete}>Sim, deletar</button>
+              <button onClick={() => setMostrarAlertaExclusao(false)}>Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Alerta de sucesso na exclusão */}
+      {mostrarAlertaSucessoExclusao && (
+        <div className={styles.alertOverlay}>
+          <div className={styles.alertBox}>
+            <FaCheckCircle size={120} color='green'/>
+            <h2>Exclusão feita!</h2>
+            <p>Espaço deletado com sucesso.</p>
+          </div>
+        </div>
+      )}
+
+      {/* Alerta de sucesso na atualização */}
+      {mostrarAlertaSucessoAtualizacao && (
+        <div className={styles.alertOverlay}>
+          <div className={styles.alertBox}>
+            <FaCheckCircle size={120} color='green'/>
+            <h2>Atualizado!</h2>
+            <p>Espaço atualizado com sucesso.</p>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>
