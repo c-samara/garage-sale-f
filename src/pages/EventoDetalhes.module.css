@@ -167,16 +167,83 @@
 
 /* ---------- Responsividade ---------- */
 @media (max-width: 768px) {
+  .main {
+    padding: 1rem;
+  }
+  
   .detailsCard {
-    padding: 1.5rem;
+    padding: 1.5rem 1rem;
+    border-radius: 12px;
   }
 
   .detailsCard h1 {
     font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .detailsCard p {
+    margin: 0.5rem 0;
+    font-size: 0.95rem;
+  }
+  
+  .spaceDetailsCard {
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .spaceDetailsCard h3 {
+    font-size: 1.1rem;
+  }
+  
+  .spaceDetailsCard div {
+    font-size: 0.9rem;
   }
 
   .buttonGroup {
     flex-direction: column;
+    gap: 0.7rem;
+  }
+  
+  .editButton,
+  .deleteButton,
+  .saveButton,
+  .cancelButton,
+  .returnButton {
+    padding: 0.7rem 1rem;
+    font-size: 0.95rem;
+  }
+  
+  .modalContent {
+    padding: 1.5rem;
+    width: 90%;
+  }
+  
+  .alertBox {
+    padding: 1.5rem;
+    width: 95%;
+  }
+}
+
+@media (max-width: 480px) {
+  .main {
+    padding: 0.8rem;
+  }
+  
+  .detailsCard {
+    padding: 1.2rem 1rem;
+  }
+  
+  .detailsCard h1 {
+    font-size: 1.3rem;
+  }
+  
+  .alertButtons {
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  
+  .alertButtons button {
+    width: 100%;
   }
 }
 .modalOverlay {

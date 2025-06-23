@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './HomeBody.module.css';
+import './HomeBody.module.responsive.css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 
@@ -69,7 +70,7 @@ export default function HomeBody() {
         const res = await fetch('https://apex.oracle.com/pls/apex/garage_sale/api/events/');
         if (!res.ok) throw new Error('Erro ao carregar eventos');
         const data = await res.json();
-        setEventos(data.items.slice(-4).reverse());
+        setEventos(data.items.reverse()); // Removed the slice(-4) to show all events
       } catch (err) {
         console.error(err);
       }

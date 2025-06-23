@@ -1,0 +1,130 @@
+/* HomeBody Responsive Extensions */
+
+/* Mobile devices (phones, less than 768px) */
+@media (max-width: 767px) {
+  .slideContainer {
+    height: 300px;
+  }
+
+  .slideText {
+    bottom: 50px;
+    left: 20px;
+    padding: 8px 12px;
+    max-width: 95%;
+  }
+
+  .title {
+    font-size: 2rem;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+  }
+
+  .latestEvents {
+    margin: 30px auto;
+    padding: 0 10px;
+  }
+
+  .latestEvents h2 {
+    font-size: 1.5rem;
+    padding: 10px;
+    text-align: center;
+    display: block;
+    width: 100%;
+  }
+
+  .eventGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 0 10px;
+  }
+
+  .eventCard {
+    padding: 15px;
+  }
+
+  .eventCard h3 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+  }
+
+  .eventCard p {
+    font-size: 0.9rem;
+    margin: 3px 0;
+  }
+
+  .oportunidadeBadge {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+  }
+
+  .chatBubbleIcon {
+    bottom: 15px;
+    right: 15px;
+    font-size: 22px;
+    padding: 8px;
+  }
+
+  .helpPrompt {
+    right: 45px;
+    bottom: 15px;
+    font-size: 0.85rem;
+    padding: 8px 10px;
+  }
+}
+
+/* Tablets (768px - 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+  .slideContainer {
+    height: 350px;
+  }
+
+  .slideText {
+    bottom: 80px;
+    left: 30px;
+  }
+
+  .title {
+    font-size: 2.8rem;
+  }
+
+  .subtitle {
+    font-size: 1.2rem;
+  }
+
+  .latestEvents {
+    margin: 40px auto;
+  }
+
+  .latestEvents h2 {
+    font-size: 1.8rem;
+  }
+
+  .eventGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: 0 20px;
+  }
+}
+
+/* Small laptops (992px - 1199px) */
+@media (min-width: 992px) and (max-width: 1199px) {
+  .eventGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Large screens (1200px and above) */
+@media (min-width: 1200px) {
+  .slideContainer {
+    height: 450px;
+  }
+
+  .eventGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

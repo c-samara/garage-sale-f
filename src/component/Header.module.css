@@ -20,6 +20,7 @@ body {
   background-color: var(--nav-bar-background-color);
   padding: 20px;
   margin: 0px;
+  flex-wrap: wrap;
 }
 
 .imgLogo {
@@ -37,6 +38,7 @@ body {
   display: flex;
   align-items: center;
   gap: 16px; /* menos espaço entre os itens */
+  flex-wrap: wrap;
 }
 
 .nav a {
@@ -99,5 +101,66 @@ body {
 
 .activeLink {
   font-weight: bold;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    padding: 15px;
+  }
+
+  .imgLogo {
+    margin-bottom: 15px;
+  }
+
+  .nav {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+    align-items: center;
+    padding-top: 10px;
+  }
+  
+  .nav a {
+    width: 100%;
+    text-align: center;
+    margin-left: 0;
+    padding: 10px;
+  }
+
+  .userInfo {
+    width: 100%;
+    justify-content: center;
+    margin-top: 10px;
+    padding: 10px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .header {
+    padding: 15px;
+  }
+  
+  .imgLogo {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .nav {
+    gap: 10px;
+  }
+  
+  .userInfo {
+    padding: 5px 10px;
+  }
+  
+  .userGreeting {
+    font-size: 14px;
+  }
+  
+  .userPlan {
+    font-size: 0.8rem;
+  }
 }
 

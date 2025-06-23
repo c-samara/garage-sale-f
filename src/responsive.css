@@ -1,0 +1,127 @@
+/* Global Responsive Styles */
+
+/* Base responsive viewport meta tag (should be added to index.html) */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+/* Global styles */
+html {
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', Arial, sans-serif;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Small devices (phones, up to 576px) */
+@media (max-width: 576px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 991px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+/* Container width adjustments */
+@media (max-width: 768px) {
+  .container, 
+  div[class*='container'] {
+    padding-left: 15px;
+    padding-right: 15px;
+    width: 100%;
+  }
+}
+
+/* Flex utilities for responsive layouts */
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* Responsive column helpers */
+@media (max-width: 768px) {
+  .col-mobile-12 {
+    width: 100%;
+  }
+  
+  .col-mobile-6 {
+    width: 50%;
+  }
+}
+
+/* Hide/show elements based on screen size */
+@media (max-width: 768px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .show-on-mobile {
+    display: none !important;
+  }
+}
+
+/* Responsive text sizing */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.8rem !important;
+  }
+  
+  h2 {
+    font-size: 1.5rem !important;
+  }
+  
+  h3 {
+    font-size: 1.2rem !important;
+  }
+  
+  p {
+    font-size: 0.95rem !important;
+  }
+}
+
+/* Responsive buttons */
+@media (max-width: 768px) {
+  button, 
+  .btn, 
+  input[type="button"], 
+  input[type="submit"] {
+    padding: 8px 16px !important;
+    font-size: 0.9rem !important;
+  }
+}
+
+/* Responsive spacing */
+@media (max-width: 768px) {
+  .responsive-padding {
+    padding: 15px !important;
+  }
+  
+  .responsive-margin {
+    margin: 15px !important;
+  }
+}

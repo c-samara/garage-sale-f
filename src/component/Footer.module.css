@@ -10,4 +10,20 @@
 .container {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .footer {
+    padding: 0.8rem 0;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer {
+    padding: 0.7rem 0;
+    font-size: 0.75rem;
+  }
 }
