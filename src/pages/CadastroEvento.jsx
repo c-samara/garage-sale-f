@@ -130,8 +130,8 @@ export default function CadastroEvento() {
               <option value="">Selecione</option>
               <option value="Bazar">Bazar</option>
               <option value="Feira">Feira</option>
-              <option value="Troca">Troca</option>
-              <option value="Venda de Garagem">Venda de Garagem</option>
+              <option value="Evento de trocas">Troca</option>
+              <option value="Venda de garagem">Venda de Garagem</option>
             </select>
           </label>
 
