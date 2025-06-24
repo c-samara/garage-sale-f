@@ -205,9 +205,19 @@ export default function CadastroEvento() {
           </label>
           {erros.tipoEvento && <p className={styles.erro}>{erros.tipoEvento}</p>}
 
-          <button type="button" onClick={() => setModalAberto(true)}>Selecionar Espaço</button>
-          {erros.espacoId && <p className={styles.erro}>{erros.espacoId}</p>}
-
+          <div className={styles.espacoSelecionado}>
+            <button type="button" onClick={() => setModalAberto(true)}>Selecionar Espaço</button>
+            {formData.espacoId && espacoSelecionado && (
+              <div className={styles.spaceSummary}>
+                <p><strong>Espaço Selecionado:</strong></p>
+                <p><strong>Nome:</strong> {espacoSelecionado.nome}</p>
+                <p><strong>Endereço:</strong> {espacoSelecionado.endereco}</p>
+                <p><strong>Preço:</strong> R$ {espacoSelecionado.preco},00</p>
+                <p><strong>Descrição:</strong> {espacoSelecionado.descricao}</p>
+              </div>
+            )}
+            {erros.espacoId && <p className={styles.erro}>{erros.espacoId}</p>}
+          </div>
           <label>
             Descrição
             <textarea name="descricao" value={formData.descricao} onChange={handleChange} />
